@@ -1666,13 +1666,13 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
     }
     setCoverRefImg(null);
 
-    // Try multiple Gemini image model variants (Google renames them often).
-    // First success wins; collect errors for diagnostic if all fail.
+    // Try image models in best-quality order. Imagen-4 uses :predict, others use :generateContent.
     const imageModels=[
-      "gemini-2.5-flash-image",            // current promoted name (2026)
-      "gemini-2.5-flash-image-preview",    // legacy preview name
-      "imagen-3.0-generate-002",           // Imagen 3 fallback
-      "imagen-3.0-generate-001",
+      "nano-banana-pro-preview",           // best quality (2026 promotional name)
+      "gemini-3-pro-image-preview",
+      "gemini-3.1-flash-image-preview",
+      "gemini-2.5-flash-image",
+      "gemini-2.5-flash-image-preview",    // legacy
     ];
     let data,res,lastErr;
     for(const model of imageModels){
@@ -1685,10 +1685,18 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
           }),
         });
         data=await res.json();
-        if(res.ok){console.log(`[xhs] image gen success with model: ${model}`);break;}
-        lastErr=data?.error?.message||`HTTP ${res.status}`;
+        if(res.ok&&data?.candidates?.[0]?.content?.parts?.some(p=>p.inlineData||p.inline_data)){
+          console.log(`[xhs] image gen success with model: ${model}`);
+          break;
+        }
+        // If response is "ok" but has no image part, treat as failure for this model
+        lastErr=data?.error?.message||(res.ok?`${model} returned no image data`:`HTTP ${res.status}`);
         console.warn(`[xhs] model ${model} failed:`,lastErr);
-      }catch(e){lastErr=e.message;}
+        res={ok:false}; // force fallback to next model
+      }catch(e){
+        lastErr=e.message;
+        console.warn(`[xhs] model ${model} threw:`,e.message);
+      }
     }
     // If all candidate models failed, fetch model list to diagnose and surface a helpful message.
     if(!res?.ok){

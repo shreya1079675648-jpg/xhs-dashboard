@@ -867,6 +867,14 @@ export default function App({user,onLogout}={}){
   const [draft,setDraft]=useState({title:"",cover:"",body:""});
   const [suggestions,setSuggestions]=useState([]);
   const [aiMsg,setAiMsg]=useState("选一个选题，或新建笔记开始创作。");
+  // Global toast (auto-dismiss after 2.5s)
+  const [toast,setToast]=useState(null); // {text, kind: "success"|"error"|"info"}
+  const toastTimer=useRef(null);
+  const showToast=useCallback((text,kind="success")=>{
+    setToast({text,kind});
+    if(toastTimer.current)clearTimeout(toastTimer.current);
+    toastTimer.current=setTimeout(()=>setToast(null),2500);
+  },[]);
   const [newComment,setNewComment]=useState({scene:"",reply:"",tag:"人设"});
   const [editingComment,setEditingComment]=useState(null); // {id,scene,reply,tag}
 
@@ -1088,6 +1096,7 @@ export default function App({user,onLogout}={}){
       setTopics(prev=>prev.map(t=>t.id===selected.id?{...t,...patch}:t));
       setSelected(prev=>prev?{...prev,...patch}:prev);
       setAiMsg("✓ 已保存到笔记，Board / Review 已同步");
+      showToast("✓ 已保存到笔记，云端同步中…","success");
     } else {
       // Create new from draft
       const title=draft.title.trim()||"未命名灵感";
@@ -1104,8 +1113,9 @@ export default function App({user,onLogout}={}){
       setTopics(prev=>[newTopic,...prev]);
       setSelected(newTopic);
       setAiMsg(`✓ 已创建新笔记「${title}」，进入灵感池`);
+      showToast(`✓ 新笔记已创建「${title.slice(0,15)}${title.length>15?"…":""}」`,"success");
     }
-  },[draft,selected]);
+  },[draft,selected,showToast]);
 
   // Track if draft has unsaved changes (works for both edit + new modes)
   const draftHasContent=Boolean(draft.title.trim()||draft.body.trim()||draft.cover.trim());
@@ -4358,6 +4368,21 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
           </>
         )}
       </main>
+
+      {/* ── GLOBAL TOAST ── */}
+      {toast&&(
+        <div className="fixed left-1/2 -translate-x-1/2 z-[100] px-4 py-2.5 rounded-2xl text-sm font-black flex items-center gap-2 animate-pulse"
+          style={{
+            top:"calc(env(safe-area-inset-top) + 60px)",
+            backgroundColor:toast.kind==="success"?ACCENT:toast.kind==="error"?"rgba(127,29,29,0.9)":"rgba(0,0,0,0.85)",
+            color:toast.kind==="success"?"black":toast.kind==="error"?"#fca5a5":"white",
+            boxShadow:"0 8px 32px rgba(0,0,0,0.4)",
+            border:toast.kind==="error"?"1px solid rgba(252,165,165,0.4)":"none",
+            maxWidth:"90vw",
+          }}>
+          {toast.text}
+        </div>
+      )}
 
       {/* ── MOBILE FLOATING SAVE BUTTON (Editor only) ── */}
       {tab==="editor"&&draftDirty&&(

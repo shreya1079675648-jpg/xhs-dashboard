@@ -1236,9 +1236,9 @@ export default function App({user,onLogout}={}){
         const d=await res.json();reply=d.choices?.[0]?.message?.content||"";
       } else {
         const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:"user",parts:[{inline_data:{mime_type:mimeType,data:base64}},{text:"请识别这张小红书数据截图。"}]}]})});
+          body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:"user",parts:[{inline_data:{mime_type:mimeType,data:base64}},{text:"请识别这张小红书数据截图。"}]}],generationConfig:{maxOutputTokens:4096,thinkingConfig:{thinkingBudget:0}}})});
         if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`HTTP ${res.status}`);}
-        const d=await res.json();reply=d.candidates?.[0]?.content?.parts?.[0]?.text||"";
+        const d=await res.json();reply=d.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"";
       }
       clearInterval(progTimer);setUploadProgress(100);
       // Parse JSON using robust parser (smart quotes, trailing commas, newlines)
@@ -1561,9 +1561,9 @@ export default function App({user,onLogout}={}){
           return{role:m.role==="assistant"?"model":"user",parts:[{text:m.content}]};
         });
         const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({system_instruction:{parts:[{text:COVER_SYSTEM}]},contents:parts_arr})});
+          body:JSON.stringify({system_instruction:{parts:[{text:COVER_SYSTEM}]},contents:parts_arr,generationConfig:{maxOutputTokens:4096,thinkingConfig:{thinkingBudget:0}}})});
         const data=await res.json();
-        reply=data.candidates?.[0]?.content?.parts?.[0]?.text||"出错了，请重试";
+        reply=data.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"出错了，请重试";
       }
       setCoverMsgs(p=>[...p,{role:"assistant",content:reply}]);
       setCoverLoading(false);
@@ -1759,9 +1759,9 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
         const d=await res.json();reply=d.choices?.[0]?.message?.content||"";
       } else {
         const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:"user",parts:[{text:userMsg}]}]})});
+          body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:"user",parts:[{text:userMsg}]}],generationConfig:{maxOutputTokens:8192,thinkingConfig:{thinkingBudget:0}}})});
         if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`HTTP ${res.status}`);}
-        const d=await res.json();reply=d.candidates?.[0]?.content?.parts?.[0]?.text||"";
+        const d=await res.json();reply=d.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"";
       }
       // Parse JSON — multi-pass cleaning to handle AI quirks
       const cb=reply.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
@@ -2033,9 +2033,12 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
           system_instruction:{parts:[{text:SCORING_PROMPT}]},
           contents:[{role:"user",parts}],
           tools:[{googleSearch:{}}],
+          generationConfig:{maxOutputTokens:8192,thinkingConfig:{thinkingBudget:0}},
         })});
         if(!r.ok){const e=await r.json();throw new Error(e.error?.message||`HTTP ${r.status}`);}
-        const d=await r.json();text=d.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("\n")||"";
+        const d=await r.json();
+        text=d.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("\n")||"";
+        if(!text){console.warn("[xhs] Gemini scoring returned empty. Full response:",d);}
       }
       const scored=parseScoreJSON(text);
       setScoreResult(scored);

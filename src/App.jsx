@@ -2534,9 +2534,9 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* ── LEFT: writing area ── */}
             <div className="space-y-4">
-              {/* Sticky save bar */}
+              {/* Desktop: sticky top save bar */}
               {selected&&(
-                <div className="sticky top-12 sm:top-14 z-30 rounded-2xl p-3 flex items-center justify-between gap-2"
+                <div className="hidden sm:flex sticky top-14 z-30 rounded-2xl p-3 items-center justify-between gap-2"
                   style={{
                     backgroundColor:draftDirty?"rgba(245,158,11,0.12)":"rgba(200,255,0,0.06)",
                     border:`1px solid ${draftDirty?"rgba(245,158,11,0.4)":`${ACCENT}33`}`,
@@ -2555,6 +2555,19 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     style={{backgroundColor:draftDirty?ACCENT:"rgba(255,255,255,0.06)",color:draftDirty?"black":"#555"}}>
                     💾 保存到笔记
                   </button>
+                </div>
+              )}
+              {/* Mobile: inline status pill (always visible at top of column) */}
+              {selected&&(
+                <div className="sm:hidden rounded-xl px-3 py-2 flex items-center justify-between gap-2"
+                  style={{
+                    backgroundColor:draftDirty?"rgba(245,158,11,0.12)":"rgba(200,255,0,0.06)",
+                    border:`1px solid ${draftDirty?"rgba(245,158,11,0.4)":`${ACCENT}33`}`,
+                  }}>
+                  <span className="text-[10px] font-black truncate" style={{color:draftDirty?"#f59e0b":ACCENT}}>
+                    {draftDirty?"● 未保存的修改":"✓ 已保存"}
+                  </span>
+                  <span className="text-[9px]" style={{color:"#666"}}>↓ 滑到底部点保存</span>
                 </div>
               )}
               <div className="space-y-2">
@@ -4314,6 +4327,20 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
           </>
         )}
       </main>
+
+      {/* ── MOBILE FLOATING SAVE BUTTON (Editor only) ── */}
+      {tab==="editor"&&selected&&draftDirty&&(
+        <button onClick={saveDraftToTopic}
+          className="sm:hidden fixed left-4 right-4 z-40 py-3.5 rounded-2xl text-sm font-black transition hover:brightness-110 flex items-center justify-center gap-2"
+          style={{
+            bottom:"calc(env(safe-area-inset-bottom) + 72px)",
+            backgroundColor:ACCENT,
+            color:"black",
+            boxShadow:"0 8px 24px rgba(200,255,0,0.3), 0 2px 8px rgba(0,0,0,0.4)",
+          }}>
+          💾 保存到笔记
+        </button>
+      )}
 
       {/* ── MOBILE BOTTOM NAV ── */}
       <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around px-2 py-2"

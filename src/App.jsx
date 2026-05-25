@@ -2620,23 +2620,37 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                           const displayText=msg.content.replace(/【(标题|正文|封面)】[\s\S]*?【\/\1】/g,"").trim();
                           return(
                             <div key={i} className={`flex flex-col ${isUser?"items-end":"items-start"}`}>
-                              <div className="max-w-[85%] rounded-2xl px-4 py-3 text-[12px] leading-relaxed whitespace-pre-wrap"
-                                style={{
-                                  backgroundColor:isSys?"rgba(200,255,0,0.08)":isUser?"rgba(200,255,0,0.18)":"rgba(255,255,255,0.06)",
-                                  color:isSys?ACCENT:isUser?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.82)",
-                                  borderRadius:isUser?"18px 18px 4px 18px":"18px 18px 18px 4px",
-                                }}>
-                                {displayText||<span style={{opacity:0.4}}>…</span>}
-                              </div>
-                              {/* Apply buttons */}
+                              {/* Only render text bubble if there's actual text (or no apply blocks to show) */}
+                              {(displayText||blocks.length===0)&&(
+                                <div className="max-w-[85%] rounded-2xl px-4 py-3 text-[12px] leading-relaxed whitespace-pre-wrap"
+                                  style={{
+                                    backgroundColor:isSys?"rgba(200,255,0,0.08)":isUser?"rgba(200,255,0,0.18)":"rgba(255,255,255,0.06)",
+                                    color:isSys?ACCENT:isUser?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.82)",
+                                    borderRadius:isUser?"18px 18px 4px 18px":"18px 18px 18px 4px",
+                                  }}>
+                                  {displayText||<span style={{opacity:0.4}}>…</span>}
+                                </div>
+                              )}
+                              {/* Apply blocks with preview */}
                               {blocks.length>0&&(
-                                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                <div className="flex flex-col gap-2 mt-1.5 w-full max-w-[85%]">
                                   {blocks.map(block=>(
-                                    <button key={block.type} onClick={()=>applyBlock(block)}
-                                      className="flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black transition hover:brightness-110"
-                                      style={{backgroundColor:ACCENT,color:"black"}}>
-                                      ✓ 应用{block.label}
-                                    </button>
+                                    <div key={block.type} className="rounded-xl p-3"
+                                      style={{backgroundColor:"rgba(200,255,0,0.06)",border:`1px solid ${ACCENT}33`}}>
+                                      <div className="flex items-center justify-between gap-2 mb-2">
+                                        <span className="text-[9px] font-black tracking-widest" style={{color:ACCENT}}>
+                                          AI 建议 · {block.label}
+                                        </span>
+                                        <button onClick={()=>applyBlock(block)}
+                                          className="flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black transition hover:brightness-110 shrink-0"
+                                          style={{backgroundColor:ACCENT,color:"black"}}>
+                                          ✓ 应用
+                                        </button>
+                                      </div>
+                                      <div className="text-[12px] leading-relaxed whitespace-pre-wrap" style={{color:"rgba(255,255,255,0.85)"}}>
+                                        {block.value}
+                                      </div>
+                                    </div>
                                   ))}
                                 </div>
                               )}

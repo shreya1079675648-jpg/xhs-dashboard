@@ -1526,6 +1526,17 @@ export default function App({user,onLogout}={}){
     setCoverLoading(true);
     // Build history for API (last 10 messages)
     const history=[...coverMsgs.slice(-10),userMsg];
+    // Inject current note context into system prompt
+    const noteCtx=`
+
+══════════ 当前笔记上下文 ══════════
+标题：${draft.title||"（未填写）"}
+封面文案候选：${draft.cover||"（未填写）"}
+正文摘要：${(draft.body||"（未填写）").slice(0,300)}${(draft.body||"").length>300?"...":""}
+══════════════════════════════════
+
+请基于这篇笔记的内容方向给设计建议（颜色/排版/封面大字应该突出哪句话/视觉风格应该对应什么情绪）。如果标题和正文已填，不要再问用户"你想做什么类型的内容"。`;
+    const systemWithCtx=COVER_SYSTEM+noteCtx;
     try{
       let reply="";
       if(aiProvider==="claude"){
@@ -1539,11 +1550,11 @@ export default function App({user,onLogout}={}){
           return{role:m.role,content:m.content};
         });
         const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"x-api-key":claudeKey,"anthropic-version":"2023-06-01","content-type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
-          body:JSON.stringify({model:"claude-opus-4-5",max_tokens:800,system:COVER_SYSTEM,messages:msgs})});
+          body:JSON.stringify({model:"claude-opus-4-5",max_tokens:800,system:systemWithCtx,messages:msgs})});
         const data=await res.json();
         reply=data.content?.[0]?.text||"出错了，请重试";
       } else if(aiProvider==="openai"){
-        const msgs=[{role:"system",content:COVER_SYSTEM},...history.map(m=>{
+        const msgs=[{role:"system",content:systemWithCtx},...history.map(m=>{
           if(m.refImage){
             return{role:"user",content:[
               {type:"image_url",image_url:{url:`data:${m.refImage.mimeType};base64,${m.refImage.base64}`}},
@@ -1567,7 +1578,7 @@ export default function App({user,onLogout}={}){
           return{role:m.role==="assistant"?"model":"user",parts:[{text:m.content}]};
         });
         const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({system_instruction:{parts:[{text:COVER_SYSTEM}]},contents:parts_arr,generationConfig:{maxOutputTokens:4096,thinkingConfig:{thinkingBudget:0}}})});
+          body:JSON.stringify({system_instruction:{parts:[{text:systemWithCtx}]},contents:parts_arr,generationConfig:{maxOutputTokens:4096,thinkingConfig:{thinkingBudget:0}}})});
         const data=await res.json();
         reply=data.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"出错了，请重试";
       }
@@ -2762,9 +2773,16 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                 <div className="flex flex-col rounded-2xl overflow-hidden" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`,minHeight:"560px"}}>
                   {/* Header */}
                   <div className="px-4 py-3 flex items-center justify-between" style={{borderBottom:`1px solid ${BORDER}`}}>
-                    <div>
-                      <span className="text-xs font-black text-white">🎨 封面设计 AI</span>
-                      <span className="ml-2 text-[9px] font-bold" style={{color:"#555"}}>上传参考图 · 生成封面 · 迭代调整</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-black text-white">🎨 封面设计 AI</span>
+                        <span className="text-[9px] font-bold" style={{color:"#555"}}>上传参考图 · 生成封面 · 迭代调整</span>
+                      </div>
+                      {(draft.title||draft.body)&&(
+                        <div className="text-[10px] mt-1 truncate" style={{color:ACCENT}}>
+                          📎 已读取笔记上下文：「{(draft.title||"无标题").slice(0,30)}{draft.title.length>30?"…":""}」
+                        </div>
+                      )}
                     </div>
                     {coverBgUrl&&(
                       <button onClick={()=>{if(selected)setNoteCover(selected.id,null);else setCoverBgUrl("");}}

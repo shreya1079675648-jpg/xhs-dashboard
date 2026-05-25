@@ -1498,7 +1498,24 @@ export default function App({user,onLogout}={}){
 
   /* ── Score helpers ── */
   /* ══════════ COVER DESIGN AI ══════════ */
-  const COVER_SYSTEM=`你是专业的小红书封面设计顾问AI。帮用户设计高点击率、高质感封面。每次回复简洁有力，给出：配色方案、排版建议、关键文案方向。当用户上传参考图时，分析风格特点并结合到设计建议中。用户可点击「生成封面图」按钮让你直接输出 SVG 封面代码。`;
+  const COVER_SYSTEM=`你是专业的小红书封面设计顾问AI。
+
+【你的职责】
+帮用户讨论封面设计方向：配色方案、排版建议、封面大字应突出哪句话、视觉风格情绪。
+
+【严格禁止】
+- ❌ 不要输出 SVG 代码 / HTML / 任何图像代码
+- ❌ 不要在回复里画 ASCII 艺术
+- ❌ 不要问"你想做什么类型的内容"——系统已注入笔记上下文给你了
+
+【正确的回答方式】
+用文字描述设计建议，比如：
+"主标题：用『XXX』这句金句，黑色加粗 120pt
+背景：暖橙到浅黄渐变，呼应正文的疗愈情绪
+装饰：右下角加一颗小爱心图标..."
+
+如果用户明确想要生成真实封面图，告诉他们：
+"点击下方绿色按钮 🎨 生成封面图，我会用 Gemini 真图模型直接出图。"`;
 
   const handleCoverFile=(e)=>{
     const file=e.target.files?.[0];
@@ -1626,9 +1643,7 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
 
   const generateCoverImg=async()=>{
     if(!geminiKey){
-      setCoverMsgs(p=>[...p,{role:"assistant",content:"⚠ 真实图像生成需要 Gemini API Key（免费申请：aistudio.google.com）。请在「AI对话」面板配置 Gemini Key 后重试。\n\n💡 如果只有 Claude key，会自动降级为 SVG 矢量封面（设计感有限）。"}]);
-      // Fall back to SVG generation via active AI
-      if(activeKey)await generateSVGCover();
+      setCoverMsgs(p=>[...p,{role:"assistant",content:"⚠ 真实封面图生成需要 Gemini API Key（Gemini 是目前唯一支持高质量出图的模型）。\n\n申请步骤：\n1. 打开 https://aistudio.google.com/apikey\n2. 创建 Key（免费，无信用卡）\n3. 进「💬 对话」面板填入 Key + 切到 Gemini\n4. 回来再点「🎨 生成封面图」"}]);
       return;
     }
     const descText=coverInput.trim();

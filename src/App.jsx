@@ -1080,21 +1080,40 @@ export default function App({user,onLogout}={}){
     setEditorPanel("check"); // jump back to check tab as a fresh start
   },[]);
 
-  // Save draft back to selected topic (writes title/coverText/body)
+  // Save draft. If editing existing topic: update it. If no selected (fresh inspiration): create new topic.
   const saveDraftToTopic=useCallback(()=>{
-    if(!selected)return;
-    const patch={title:draft.title,coverText:draft.cover,body:draft.body};
-    setTopics(prev=>prev.map(t=>t.id===selected.id?{...t,...patch}:t));
-    setSelected(prev=>prev?{...prev,...patch}:prev);
-    setAiMsg("✓ 已保存到笔记，Board / Review 已同步");
+    if(selected){
+      // Update existing
+      const patch={title:draft.title,coverText:draft.cover,body:draft.body};
+      setTopics(prev=>prev.map(t=>t.id===selected.id?{...t,...patch}:t));
+      setSelected(prev=>prev?{...prev,...patch}:prev);
+      setAiMsg("✓ 已保存到笔记，Board / Review 已同步");
+    } else {
+      // Create new from draft
+      const title=draft.title.trim()||"未命名灵感";
+      const d=new Date();d.setDate(d.getDate()+14);
+      const publishTime=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}T21:00:00`;
+      const newTopic={
+        id:uid(),title,
+        pillar:"人生重铸",status:"灵感池",score:60,
+        goal:"灵感记录",tag:"灵感",
+        noteType:"image",publishTime,autoScheduled:true,
+        coverText:draft.cover||"",
+        body:draft.body||"",
+      };
+      setTopics(prev=>[newTopic,...prev]);
+      setSelected(newTopic);
+      setAiMsg(`✓ 已创建新笔记「${title}」，进入灵感池`);
+    }
   },[draft,selected]);
 
-  // Track if draft differs from selected (unsaved indicator)
-  const draftDirty=selected&&(
+  // Track if draft has unsaved changes (works for both edit + new modes)
+  const draftHasContent=Boolean(draft.title.trim()||draft.body.trim()||draft.cover.trim());
+  const draftDirty=selected?(
     draft.title!==(selected.title||"")||
     draft.cover!==(selected.coverText||generateCover(selected.title))||
     draft.body!==(selected.body||"")
-  );
+  ):draftHasContent;
   const addTopic=()=>{
     // Auto-schedule new topics 14 days out so they appear on calendar
     const d=new Date();d.setDate(d.getDate()+14);
@@ -2534,42 +2553,54 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* ── LEFT: writing area ── */}
             <div className="space-y-4">
-              {/* Desktop: sticky top save bar */}
-              {selected&&(
-                <div className="hidden sm:flex sticky top-14 z-30 rounded-2xl p-3 items-center justify-between gap-2"
-                  style={{
-                    backgroundColor:draftDirty?"rgba(245,158,11,0.12)":"rgba(200,255,0,0.06)",
-                    border:`1px solid ${draftDirty?"rgba(245,158,11,0.4)":`${ACCENT}33`}`,
-                    backdropFilter:"blur(10px)",
-                  }}>
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-black" style={{color:draftDirty?"#f59e0b":ACCENT}}>
-                      {draftDirty?"● 未保存":"✓ 已保存"}
-                    </span>
-                    <span className="text-[10px] truncate" style={{color:"#666"}}>
-                      {selected.title||"未命名笔记"}
-                    </span>
-                  </div>
+              {/* Desktop: sticky top save bar (works for both edit + new modes) */}
+              <div className="hidden sm:flex sticky top-14 z-30 rounded-2xl p-3 items-center justify-between gap-2"
+                style={{
+                  backgroundColor:draftDirty?"rgba(245,158,11,0.12)":"rgba(200,255,0,0.06)",
+                  border:`1px solid ${draftDirty?"rgba(245,158,11,0.4)":`${ACCENT}33`}`,
+                  backdropFilter:"blur(10px)",
+                }}>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[10px] font-black" style={{color:draftDirty?"#f59e0b":ACCENT}}>
+                    {!selected?(draftHasContent?"● 新灵感未保存":"💡 灵感速记"):(draftDirty?"● 未保存":"✓ 已保存")}
+                  </span>
+                  <span className="text-[10px] truncate" style={{color:"#666"}}>
+                    {selected?(selected.title||"未命名笔记"):"输入内容后点保存创建新笔记"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {selected&&(
+                    <button onClick={()=>{
+                      if(draftDirty&&!confirm("当前修改未保存，确定切换到新灵感？"))return;
+                      setSelected(null);
+                      setDraft({title:"",cover:"",body:""});
+                      setSuggestions([]);
+                      setAiMsg("💡 进入灵感速记模式，写完点保存自动创建新笔记");
+                    }}
+                      title="清空，开始记新灵感"
+                      className="text-[10px] font-black px-2 py-1.5 rounded-lg transition hover:brightness-110"
+                      style={{backgroundColor:"rgba(255,255,255,0.06)",color:"#888",border:`1px solid ${BORDER}`}}>
+                      💡 新建
+                    </button>
+                  )}
                   <button onClick={saveDraftToTopic} disabled={!draftDirty}
-                    className="text-[11px] font-black px-3 py-1.5 rounded-lg transition disabled:opacity-40 hover:brightness-110 shrink-0"
+                    className="text-[11px] font-black px-3 py-1.5 rounded-lg transition disabled:opacity-40 hover:brightness-110"
                     style={{backgroundColor:draftDirty?ACCENT:"rgba(255,255,255,0.06)",color:draftDirty?"black":"#555"}}>
-                    💾 保存到笔记
+                    {selected?"💾 保存到笔记":"＋ 创建新笔记"}
                   </button>
                 </div>
-              )}
+              </div>
               {/* Mobile: inline status pill (always visible at top of column) */}
-              {selected&&(
-                <div className="sm:hidden rounded-xl px-3 py-2 flex items-center justify-between gap-2"
-                  style={{
-                    backgroundColor:draftDirty?"rgba(245,158,11,0.12)":"rgba(200,255,0,0.06)",
-                    border:`1px solid ${draftDirty?"rgba(245,158,11,0.4)":`${ACCENT}33`}`,
-                  }}>
-                  <span className="text-[10px] font-black truncate" style={{color:draftDirty?"#f59e0b":ACCENT}}>
-                    {draftDirty?"● 未保存的修改":"✓ 已保存"}
-                  </span>
-                  <span className="text-[9px]" style={{color:"#666"}}>↓ 滑到底部点保存</span>
-                </div>
-              )}
+              <div className="sm:hidden rounded-xl px-3 py-2 flex items-center justify-between gap-2"
+                style={{
+                  backgroundColor:draftDirty?"rgba(245,158,11,0.12)":"rgba(200,255,0,0.06)",
+                  border:`1px solid ${draftDirty?"rgba(245,158,11,0.4)":`${ACCENT}33`}`,
+                }}>
+                <span className="text-[10px] font-black truncate" style={{color:draftDirty?"#f59e0b":ACCENT}}>
+                  {!selected?(draftHasContent?"● 新灵感未保存":"💡 灵感速记模式"):(draftDirty?"● 未保存的修改":"✓ 已保存")}
+                </span>
+                <span className="text-[9px] shrink-0" style={{color:"#666"}}>{draftDirty?"↓ 点底部保存":""}</span>
+              </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black tracking-widest" style={{color:"#555"}}>标题</label>
                 <Input value={draft.title} onChange={e=>setDraft({...draft,title:e.target.value})} placeholder="输入标题..."/>
@@ -4329,7 +4360,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
       </main>
 
       {/* ── MOBILE FLOATING SAVE BUTTON (Editor only) ── */}
-      {tab==="editor"&&selected&&draftDirty&&(
+      {tab==="editor"&&draftDirty&&(
         <button onClick={saveDraftToTopic}
           className="sm:hidden fixed left-4 right-4 z-40 py-3.5 rounded-2xl text-sm font-black transition hover:brightness-110 flex items-center justify-center gap-2"
           style={{
@@ -4338,7 +4369,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
             color:"black",
             boxShadow:"0 8px 24px rgba(200,255,0,0.3), 0 2px 8px rgba(0,0,0,0.4)",
           }}>
-          💾 保存到笔记
+          {selected?"💾 保存到笔记":"＋ 创建新笔记"}
         </button>
       )}
 

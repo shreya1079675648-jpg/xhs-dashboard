@@ -509,7 +509,7 @@ const CalStatCard=({label,value,highlight=false,active=false,onClick})=>(
 
 /* ═══════════════════════════ CAL NOTE MODAL ════════════════════════════════ */
 const CAL_STATUS_OPTIONS=["待写","草稿","待发布","已发布"];
-const CalNoteModal=({note,onClose,onUpdate})=>{
+const CalNoteModal=({note,onClose,onUpdate,onDelete})=>{
   const color=TYPE_COLOR[note.type]||"#C8FF00";
   const [editStatus,setEditStatus]=useState(note.status);
   const [editDate,setEditDate]=useState(note.publish_date||"");
@@ -598,13 +598,27 @@ const CalNoteModal=({note,onClose,onUpdate})=>{
           </div>
         </div>
         {/* Footer */}
-        <div className="px-6 pb-6 flex gap-3">
-          <button onClick={onClose}
-            className="flex-1 py-3 rounded-2xl text-sm font-black transition hover:opacity-70"
-            style={{backgroundColor:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.5)"}}>取消</button>
-          <button onClick={save}
-            className="flex-1 py-3 rounded-2xl text-sm font-black transition hover:brightness-110"
-            style={{backgroundColor:"#C8FF00",color:"black"}}>保存更改</button>
+        <div className="px-6 pb-6 space-y-2">
+          <div className="flex gap-3">
+            <button onClick={onClose}
+              className="flex-1 py-3 rounded-2xl text-sm font-black transition hover:opacity-70"
+              style={{backgroundColor:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.5)"}}>取消</button>
+            <button onClick={save}
+              className="flex-1 py-3 rounded-2xl text-sm font-black transition hover:brightness-110"
+              style={{backgroundColor:"#C8FF00",color:"black"}}>保存更改</button>
+          </div>
+          {onDelete&&(
+            <button onClick={()=>{
+              if(confirm(`确认删除「${note.title.slice(0,15)}${note.title.length>15?"…":""}」？\n\n该笔记会从 Board / Calendar / Review 同步消失，包括所有图片和快照。此操作不可撤销。`)){
+                onDelete(note.id);
+                onClose();
+              }
+            }}
+              className="w-full py-2.5 rounded-2xl text-[11px] font-black transition hover:brightness-110"
+              style={{backgroundColor:"rgba(127,29,29,0.3)",color:"#fca5a5",border:"1px solid rgba(127,29,29,0.4)"}}>
+              ✕ 删除这条笔记
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -2570,8 +2584,8 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   </div>
                   <div className="flex items-center justify-between mt-3">
                     <span className="text-[10px]" style={{color:"#444"}}>{t.tag}</span>
-                    <button onClick={e=>{e.stopPropagation();if(confirm(`删除「${t.title.slice(0,15)}」？`))deleteTopic(t.id);}}
-                      className="text-[10px] px-2 py-1 hover:text-red-400 transition" style={{color:"#333"}}>✕ 删除</button>
+                    <button onClick={e=>{e.stopPropagation();if(confirm(`确认删除「${t.title.slice(0,15)}${t.title.length>15?"…":""}」？\n\n该笔记会从 Board / Calendar / Review 同步消失，包括所有图片和快照。此操作不可撤销。`)){deleteTopic(t.id);showToast("✓ 笔记已删除","success");}}}
+                      className="text-[10px] px-2 py-1 rounded-md hover:brightness-110 transition" style={{color:"#fca5a5",backgroundColor:"rgba(127,29,29,0.2)"}}>✕ 删除</button>
                   </div>
                 </div>
               ))}
@@ -3395,6 +3409,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   note={calDetailNote}
                   onClose={()=>setCalDetailNote(null)}
                   onUpdate={(id,patch)=>{updateCalendarNote(id,patch);setCalDetailNote(n=>({...n,...patch}));}}
+                  onDelete={(id)=>{deleteTopic(id);showToast("✓ 笔记已删除","success");}}
                 />
               )}
             </div>

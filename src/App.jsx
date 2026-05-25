@@ -1690,23 +1690,28 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
         console.warn(`[xhs] model ${model} failed:`,lastErr);
       }catch(e){lastErr=e.message;}
     }
-    try{
-      if(!res?.ok){
-        // All models failed — fetch list of available models to help diagnose
-        try{
-          const listRes=await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`);
-          const listData=await listRes.json();
-          const imageCapable=(listData.models||[])
-            .filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent"))
-            .map(m=>m.name.replace("models/",""))
-            .filter(n=>n.includes("image")||n.includes("imagen")||n.includes("vision"));
-          console.log("[xhs] all available models:",(listData.models||[]).map(m=>m.name));
-          console.log("[xhs] image-capable models:",imageCapable);
-          throw new Error(`所有图像模型都不可用。\n\n你账号支持的图像模型：${imageCapable.length>0?imageCapable.join(", "):"无（你的 Gemini API 没开通图像生成）"}\n\n详细列表已打印到 Console (F12)`);
-        }catch(listErr){
-          throw new Error(lastErr||listErr.message||"All image models failed");
-        }
+    // If all candidate models failed, fetch model list to diagnose and surface a helpful message.
+    if(!res?.ok){
+      let diagnosticMsg=lastErr||"All image models failed";
+      try{
+        const listRes=await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`);
+        const listData=await listRes.json();
+        const allModels=(listData.models||[]).map(m=>m.name.replace("models/",""));
+        const imageCapable=allModels.filter(n=>/image|imagen|vision|nano/i.test(n));
+        console.log("[xhs] === ALL Gemini models available to your key ===");
+        console.log(allModels);
+        console.log("[xhs] image-related models:",imageCapable);
+        diagnosticMsg=imageCapable.length>0
+          ?`你账号能用的图像模型：${imageCapable.join("、 ")}（详细打印在 F12 Console）`
+          :`你账号没有图像生成模型。完整模型列表打印在 F12 Console。最可能：\n1. 你 Gemini 项目在中国大陆 region，图像生成对该 region 不可用\n2. 需要去 Google Cloud Console enable Vertex AI Imagen`;
+      }catch(listErr){
+        console.warn("[xhs] failed to list models",listErr);
       }
+      setCoverMsgs(p=>[...p.filter(m=>!m.isGenerating),{role:"assistant",content:`⚠ ${diagnosticMsg}`}]);
+      setGenImgLoading(false);
+      return;
+    }
+    try{
       // Find image part in response
       const respParts=data?.candidates?.[0]?.content?.parts||[];
       const imgPart=respParts.find(p=>p.inlineData||p.inline_data);

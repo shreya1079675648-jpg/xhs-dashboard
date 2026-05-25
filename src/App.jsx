@@ -1235,7 +1235,7 @@ export default function App({user,onLogout}={}){
         if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`HTTP ${res.status}`);}
         const d=await res.json();reply=d.choices?.[0]?.message?.content||"";
       } else {
-        const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+        const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
           body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:"user",parts:[{inline_data:{mime_type:mimeType,data:base64}},{text:"请识别这张小红书数据截图。"}]}]})});
         if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`HTTP ${res.status}`);}
         const d=await res.json();reply=d.candidates?.[0]?.content?.parts?.[0]?.text||"";
@@ -1441,7 +1441,7 @@ export default function App({user,onLogout}={}){
       } else {
         // Gemini
         const geminiMsgs=historyMsgs.map(m=>({role:m.role==="assistant"?"model":"user",parts:[{text:m.content}]}));
-        resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=${key}`,{
+        resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${key}`,{
           method:"POST",
           headers:{"Content-Type":"application/json"},
           body:JSON.stringify({
@@ -1537,7 +1537,7 @@ export default function App({user,onLogout}={}){
           }
           return{role:m.role==="assistant"?"model":"user",parts:[{text:m.content}]};
         });
-        const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+        const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
           body:JSON.stringify({system_instruction:{parts:[{text:COVER_SYSTEM}]},contents:parts_arr})});
         const data=await res.json();
         reply=data.candidates?.[0]?.content?.parts?.[0]?.text||"出错了，请重试";
@@ -1735,7 +1735,7 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
         if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`HTTP ${res.status}`);}
         const d=await res.json();reply=d.choices?.[0]?.message?.content||"";
       } else {
-        const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+        const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
           body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:"user",parts:[{text:userMsg}]}]})});
         if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`HTTP ${res.status}`);}
         const d=await res.json();reply=d.candidates?.[0]?.content?.parts?.[0]?.text||"";
@@ -2006,7 +2006,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
         const parts=hasCoverImg&&base64
           ?[{inline_data:{mime_type:mimeType,data:base64}},{text:textPrompt}]
           :[{text:textPrompt}];
-        const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
           system_instruction:{parts:[{text:SCORING_PROMPT}]},
           contents:[{role:"user",parts}],
           tools:[{googleSearch:{}}],

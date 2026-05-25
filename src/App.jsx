@@ -1164,9 +1164,11 @@ export default function App({user,onLogout}={}){
       setSelNote(prev=>prev?.id===noteId?{...prev,images:nextImages}:prev);
       setSelected(prev=>prev?.id===noteId?{...prev,images:nextImages}:prev);
       console.log(`[xhs] uploaded ${uploaded.length} image(s) to cloud for note ${noteId}`);
+      showToast(`✓ 已上传 ${uploaded.length} 张图片`,"success");
     }catch(e){
       console.error("[xhs] addNoteImages failed:",e);
       setPersistError(`⚠ 图片上传失败：${e.message}`);
+      showToast(`⚠ 图片上传失败：${e.message}`,"error");
     }finally{setImgSaving(false);}
   };
   const removeNoteImage=async(noteId,imgId)=>{
@@ -1184,7 +1186,8 @@ export default function App({user,onLogout}={}){
         await storage.deleteStoragePath(removed.storagePath);
         await storage.deleteNoteImageRow(imgId);
       }
-    }catch(e){console.error("[xhs] removeNoteImage failed:",e);}
+      showToast("✓ 图片已删除","success");
+    }catch(e){console.error("[xhs] removeNoteImage failed:",e);showToast(`⚠ 删除失败：${e.message}`,"error");}
     finally{setImgSaving(false);}
   };
   const moveNoteImage=async(noteId,imgId,dir)=>{
@@ -1243,9 +1246,11 @@ export default function App({user,onLogout}={}){
       setCoverBgUrl(signedUrl);
       // Trigger topics auto-save (which will push coverImagePath to Supabase)
       console.log(`[xhs] cover ${dataUrl?"uploaded":"cleared"} for note ${noteId}`);
+      showToast(dataUrl?"✓ 封面已设置":"✓ 封面已移除","success");
     }catch(e){
       console.error("[xhs] setNoteCover failed:",e);
       setPersistError(`⚠ 封面保存失败：${e.message}`);
+      showToast(`⚠ 封面保存失败：${e.message}`,"error");
     }finally{setImgSaving(false);}
   };
   const addCommentTemplate=()=>{if(!newComment.scene.trim())return;setComments(prev=>[{id:uid(),...newComment},...prev]);setNewComment({scene:"",reply:"",tag:"人设"});};
@@ -1560,6 +1565,7 @@ export default function App({user,onLogout}={}){
       setTopics(prev=>prev.map(n=>n.id===ocrNote.id?{...n,snapshots:[...(n.snapshots||[]),newSnap]}:n));
     }
     setReviewModal(null);setUploadStep(0);setOcrNote(null);setOcrPreviewUrl("");setOcrError("");
+    showToast(`✓ ${ocrData.type} 快照已录入`,"success");
   };
 
   /* Simulate AI prediction for new note */
@@ -1608,6 +1614,7 @@ export default function App({user,onLogout}={}){
     setTopics(prev=>[{...predNote,score:predNote.aiPrediction?.confidence?Math.round(predNote.aiPrediction.confidence*100):70,goal:"人设/共鸣",tag:"新建"},...prev]);
     setReviewModal(null);setPredStep(0);setPredNote(null);
     setNewNoteForm({title:"",pillar:"人生重铸",tags:"",publishTime:"",noteType:"image"});
+    showToast(`✓ 笔记已创建「${predNote.title.slice(0,15)}${predNote.title.length>15?"…":""}」`,"success");
   };
 
   /* ── AI Chat helpers ── */
@@ -1627,6 +1634,7 @@ export default function App({user,onLogout}={}){
     const now=new Date().toISOString();
     setTopics(prev=>prev.map(t=>t.id===selected.id?{...t,score:Math.round(score),scoredAt:now}:t));
     setSelected(prev=>prev?{...prev,score:Math.round(score),scoredAt:now}:prev);
+    showToast(`✓ AI 评分 ${Math.round(score)} 已写入笔记`,"success");
   };
 
   const applyBlock=(block)=>{
@@ -2049,8 +2057,10 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
         try{await db.upsertPatternReport(result,userId);}
         catch(e){console.error("[xhs] cloud pattern report push failed",e);}
       }
+      showToast(`✓ 规律报告已生成 · 基于 ${reviewNotes.length} 篇`,"success");
     }catch(err){
       setPatternError(`⚠ AI 分析失败：${err.message}`);
+      showToast(`⚠ AI 分析失败：${err.message}`,"error");
     }finally{setPatternLoading(false);}
   };
 
@@ -2275,8 +2285,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
         if(!r.ok){const e=await r.json();throw new Error(e.error?.message||`HTTP ${r.status}`);}
         const d=await r.json();text=d.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("\n")||"";
       }
-      setScoreResult(parseScoreJSON(text));
-    }catch(err){setScoreError(err.message);}
+      const scored=parseScoreJSON(text);
+      setScoreResult(scored);
+      showToast(`✓ AI 评分完成：${scored.total_score}/100 ${scored.tier||""}`,"success");
+    }catch(err){setScoreError(err.message);showToast(`⚠ 评分失败：${err.message}`,"error");}
     finally{setScoreLoading(false);}
   };
 

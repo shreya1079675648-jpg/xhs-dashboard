@@ -25,6 +25,7 @@ const topicToDb = (t, userId) => ({
   snapshots: t.snapshots ?? [],
   auto_scheduled: t.autoScheduled ?? false,
   body: t.body ?? null,
+  score_detail: t.scoreDetail ?? null,
 });
 
 const topicFromDb = (r) => ({
@@ -45,6 +46,7 @@ const topicFromDb = (r) => ({
   snapshots: r.snapshots ?? [],
   autoScheduled: r.auto_scheduled,
   body: r.body ?? '',
+  scoreDetail: r.score_detail ?? null,
   // images + coverImage hydrated separately (stage 4.3)
 });
 

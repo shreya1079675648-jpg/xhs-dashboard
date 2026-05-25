@@ -700,6 +700,7 @@ export default function App({user,onLogout}={}){
   const [setupProvider,setSetupProvider]=useState("claude"); // which provider key we're setting up
   const [editorPanel,setEditorPanel]=useState("check"); // "check" | "chat" | "score" | "cover"
   const [scoreResult,setScoreResult]=useState(null);
+  const [scoreDetailView,setScoreDetailView]=useState(null); // topic to view saved score detail for
   const [scoreLoading,setScoreLoading]=useState(false);
   const [scoreError,setScoreError]=useState("");
   const chatEndRef=useRef(null);
@@ -1357,13 +1358,18 @@ export default function App({user,onLogout}={}){
     return blocks;
   };
 
-  // Save total AI score to selected topic + record timestamp
+  // Save AI score + full breakdown to selected topic + record timestamp
   const saveScoreToNote=(score)=>{
     if(!selected||!score)return;
     const now=new Date().toISOString();
-    setTopics(prev=>prev.map(t=>t.id===selected.id?{...t,score:Math.round(score),scoredAt:now}:t));
-    setSelected(prev=>prev?{...prev,score:Math.round(score),scoredAt:now}:prev);
-    showToast(`✓ AI 评分 ${Math.round(score)} 已写入笔记`,"success");
+    const patch={
+      score:Math.round(score),
+      scoredAt:now,
+      scoreDetail:scoreResult?{...scoreResult,_savedAt:now}:null,
+    };
+    setTopics(prev=>prev.map(t=>t.id===selected.id?{...t,...patch}:t));
+    setSelected(prev=>prev?{...prev,...patch}:prev);
+    showToast(`✓ AI 评分 ${Math.round(score)} 已写入笔记（含完整明细）`,"success");
   };
 
   const applyBlock=(block)=>{
@@ -2296,11 +2302,20 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         <Badge style={{backgroundColor:"#1e1e1e",color:"#888"}}>{t.pillar}</Badge>
                         <Badge style={{backgroundColor:"#1e1e1e",color:"#888"}}>{t.goal}</Badge>
-                        <span title={t.scoredAt?`AI 评分 · ${new Date(t.scoredAt).toLocaleString("zh-CN")}`:"AI 评分（mock 数据 · 去 Editor → 📊 评分 跑真实分数）"}>
-                          <Badge style={{backgroundColor:t.scoredAt?"rgba(200,255,0,0.12)":"#1e1e1e",color:t.scoredAt?ACCENT:"#666"}}>
-                            {t.scoredAt?"AI":"AI?"} {t.score}
-                          </Badge>
-                        </span>
+                        {t.scoreDetail?(
+                          <button onClick={e=>{e.stopPropagation();setScoreDetailView(t);}}
+                            title={`查看完整 AI 评分明细 · 评于 ${new Date(t.scoredAt).toLocaleString("zh-CN")}`}
+                            className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wide transition hover:brightness-110"
+                            style={{backgroundColor:"rgba(200,255,0,0.18)",color:ACCENT,cursor:"pointer",border:`1px solid ${ACCENT}44`}}>
+                            AI {t.score} →
+                          </button>
+                        ):(
+                          <span title={t.scoredAt?`AI 评分 · ${new Date(t.scoredAt).toLocaleString("zh-CN")}（无明细）`:"AI 评分（mock 数据 · 去 Editor → 📊 评分 跑真实分数）"}>
+                            <Badge style={{backgroundColor:t.scoredAt?"rgba(200,255,0,0.12)":"#1e1e1e",color:t.scoredAt?ACCENT:"#666"}}>
+                              {t.scoredAt?"AI":"AI?"} {t.score}
+                            </Badge>
+                          </span>
+                        )}
                       </div>
                     </div>
                     {/* Top-right: status dropdown styled like a badge (click to change) */}
@@ -4173,6 +4188,43 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
             maxWidth:"90vw",
           }}>
           {toast.text}
+        </div>
+      )}
+
+      {/* ── SAVED SCORE DETAIL MODAL ── */}
+      {scoreDetailView&&(
+        <div className="fixed inset-0 z-[80] flex items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto"
+          style={{backgroundColor:"rgba(0,0,0,0.85)"}}
+          onClick={e=>{if(e.target===e.currentTarget)setScoreDetailView(null);}}>
+          <div className="w-full max-w-2xl rounded-2xl overflow-hidden my-auto"
+            style={{backgroundColor:"#111",border:`1px solid ${BORDER}`,maxHeight:"95vh"}}>
+            <div className="flex items-center justify-between px-5 py-3" style={{borderBottom:`1px solid ${BORDER}`}}>
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-black text-white truncate">{scoreDetailView.title}</div>
+                <div className="text-[10px] mt-0.5" style={{color:"#555"}}>
+                  AI 评分明细 · 评于 {scoreDetailView.scoredAt?new Date(scoreDetailView.scoredAt).toLocaleString("zh-CN"):"未知"}
+                </div>
+              </div>
+              <button onClick={()=>setScoreDetailView(null)} className="text-[#555] hover:text-white text-lg ml-2 shrink-0">✕</button>
+            </div>
+            <div style={{maxHeight:"calc(95vh - 60px)",overflowY:"auto"}}>
+              <ScorePanel
+                result={scoreDetailView.scoreDetail}
+                loading={false}
+                error=""
+                hasKey={true}
+                onScore={()=>{setScoreDetailView(null);openEditor(scoreDetailView);setTimeout(()=>setEditorPanel("score"),100);}}
+              />
+            </div>
+            <div className="px-5 py-3 flex gap-2" style={{borderTop:`1px solid ${BORDER}`}}>
+              <button onClick={()=>setScoreDetailView(null)}
+                className="flex-1 py-2 rounded-xl text-[11px] font-black transition hover:opacity-70"
+                style={{backgroundColor:"rgba(255,255,255,0.06)",color:"#888"}}>关闭</button>
+              <button onClick={()=>{const t=scoreDetailView;setScoreDetailView(null);openEditor(t);setTimeout(()=>setEditorPanel("score"),100);}}
+                className="flex-1 py-2 rounded-xl text-[11px] font-black transition hover:brightness-110"
+                style={{backgroundColor:ACCENT,color:"black"}}>🔄 重新评分</button>
+            </div>
+          </div>
         </div>
       )}
 

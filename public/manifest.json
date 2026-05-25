@@ -1,0 +1,21 @@
+{
+  "name": "小红书运营仪表盘",
+  "short_name": "小红书运营",
+  "description": "选题板 · 创作台 · 数据复盘 · AI 评分 · 截图录入",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "lang": "zh-CN",
+  "categories": ["productivity", "business"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

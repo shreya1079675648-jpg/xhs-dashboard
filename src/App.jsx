@@ -1460,23 +1460,25 @@ export default function App({user,onLogout}={}){
         while(true){
           const{done,value}=await reader.read();if(done)break;
           buffer+=dec.decode(value,{stream:true});
-          // SSE events end with double newline; process complete events only
-          const events=buffer.split("\n\n");
-          buffer=events.pop()||""; // keep incomplete trailing chunk
-          for(const event of events){
-            for(const line of event.split("\n").filter(l=>l.startsWith("data: "))){
-              const raw=line.slice(6).trim();
-              if(!raw||raw==="[DONE]")continue;
-              try{
-                const p=JSON.parse(raw);
-                // Concat text from ALL parts (Gemini splits text + tool_use across parts)
-                const parts=p.candidates?.[0]?.content?.parts||[];
-                const t=parts.map(part=>part.text||"").join("");
-                if(t){
-                  acc+=t;
-                  setChatMsgs(prev=>{const u=[...prev];u[u.length-1]={role:"assistant",content:acc};return u;});
-                }
-              }catch{}
+          // Process complete lines (keep last incomplete line in buffer for next chunk)
+          const lines=buffer.split("\n");
+          buffer=lines.pop()||"";
+          for(const line of lines){
+            const trimmed=line.trim();
+            if(!trimmed.startsWith("data:"))continue;
+            const raw=trimmed.slice(5).trim();
+            if(!raw||raw==="[DONE]")continue;
+            try{
+              const p=JSON.parse(raw);
+              // Concat text from ALL parts (Gemini may split text across parts)
+              const parts=p.candidates?.[0]?.content?.parts||[];
+              const t=parts.map(part=>part.text||"").join("");
+              if(t){
+                acc+=t;
+                setChatMsgs(prev=>{const u=[...prev];u[u.length-1]={role:"assistant",content:acc};return u;});
+              }
+            }catch(parseErr){
+              console.warn("[xhs] Gemini SSE parse failed:",raw.slice(0,150));
             }
           }
         }

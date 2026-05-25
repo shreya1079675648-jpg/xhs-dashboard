@@ -1529,13 +1529,14 @@ export default function App({user,onLogout}={}){
     // Inject current note context into system prompt
     const noteCtx=`
 
-══════════ 当前笔记上下文 ══════════
+══════════ 当前笔记完整内容 ══════════
 标题：${draft.title||"（未填写）"}
 封面文案候选：${draft.cover||"（未填写）"}
-正文摘要：${(draft.body||"（未填写）").slice(0,300)}${(draft.body||"").length>300?"...":""}
-══════════════════════════════════
+正文：
+${draft.body||"（未填写）"}
+══════════════════════════════════════
 
-请基于这篇笔记的内容方向给设计建议（颜色/排版/封面大字应该突出哪句话/视觉风格应该对应什么情绪）。如果标题和正文已填，不要再问用户"你想做什么类型的内容"。`;
+请基于这篇笔记的完整内容给设计建议（颜色/排版/封面大字应该突出哪句话/视觉风格应该对应什么情绪）。如果标题和正文已填，不要再问用户"你想做什么类型的内容"。`;
     const systemWithCtx=COVER_SYSTEM+noteCtx;
     try{
       let reply="";

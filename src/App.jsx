@@ -2548,20 +2548,30 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                         </span>
                       </div>
                     </div>
-                    <StatusBadge status={t.status}/>
+                    {/* Top-right: status dropdown styled like a badge (click to change) */}
+                    <select value={t.status}
+                      onClick={e=>e.stopPropagation()}
+                      onChange={e=>{e.stopPropagation();updateTopicStatus(t.id,e.target.value);}}
+                      title="点击切换状态"
+                      className="text-[10px] font-black px-2.5 py-0.5 rounded-full outline-none cursor-pointer transition hover:brightness-125 shrink-0"
+                      style={{
+                        backgroundColor:statusColor(t.status).bg,
+                        color:statusColor(t.status).color,
+                        border:"none",
+                        appearance:"none",
+                        WebkitAppearance:"none",
+                        paddingRight:"22px",
+                        backgroundImage:`url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(statusColor(t.status).color)}' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>")`,
+                        backgroundRepeat:"no-repeat",
+                        backgroundPosition:"right 6px center",
+                      }}>
+                      {STATUSES.map(s=><option key={s} value={s} style={{backgroundColor:"#1a1a1a",color:"white"}}>{s}</option>)}
+                    </select>
                   </div>
                   <div className="flex items-center justify-between mt-3">
                     <span className="text-[10px]" style={{color:"#444"}}>{t.tag}</span>
-                    <div className="flex gap-1">
-                      <select value={t.status} onClick={e=>e.stopPropagation()}
-                        onChange={e=>{e.stopPropagation();updateTopicStatus(t.id,e.target.value);}}
-                        className="rounded-lg px-2 py-1 text-[10px] outline-none"
-                        style={{backgroundColor:"#1a1a1a",border:"1px solid #2a2a2a",color:"#888"}}>
-                        {STATUSES.map(s=><option key={s} value={s}>{s}</option>)}
-                      </select>
-                      <button onClick={e=>{e.stopPropagation();deleteTopic(t.id);}}
-                        className="text-[10px] px-2 py-1 hover:text-red-400 transition" style={{color:"#333"}}>✕</button>
-                    </div>
+                    <button onClick={e=>{e.stopPropagation();if(confirm(`删除「${t.title.slice(0,15)}」？`))deleteTopic(t.id);}}
+                      className="text-[10px] px-2 py-1 hover:text-red-400 transition" style={{color:"#333"}}>✕ 删除</button>
                   </div>
                 </div>
               ))}

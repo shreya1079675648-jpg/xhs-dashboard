@@ -1691,7 +1691,22 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
       }catch(e){lastErr=e.message;}
     }
     try{
-      if(!res?.ok){throw new Error(lastErr||"All image models failed");}
+      if(!res?.ok){
+        // All models failed — fetch list of available models to help diagnose
+        try{
+          const listRes=await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`);
+          const listData=await listRes.json();
+          const imageCapable=(listData.models||[])
+            .filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent"))
+            .map(m=>m.name.replace("models/",""))
+            .filter(n=>n.includes("image")||n.includes("imagen")||n.includes("vision"));
+          console.log("[xhs] all available models:",(listData.models||[]).map(m=>m.name));
+          console.log("[xhs] image-capable models:",imageCapable);
+          throw new Error(`所有图像模型都不可用。\n\n你账号支持的图像模型：${imageCapable.length>0?imageCapable.join(", "):"无（你的 Gemini API 没开通图像生成）"}\n\n详细列表已打印到 Console (F12)`);
+        }catch(listErr){
+          throw new Error(lastErr||listErr.message||"All image models failed");
+        }
+      }
       // Find image part in response
       const respParts=data?.candidates?.[0]?.content?.parts||[];
       const imgPart=respParts.find(p=>p.inlineData||p.inline_data);

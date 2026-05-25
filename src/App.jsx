@@ -1666,19 +1666,32 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
     }
     setCoverRefImg(null);
 
+    // Try multiple Gemini image model variants (Google renames them often).
+    // First success wins; collect errors for diagnostic if all fail.
+    const imageModels=[
+      "gemini-2.5-flash-image",            // current promoted name (2026)
+      "gemini-2.5-flash-image-preview",    // legacy preview name
+      "imagen-3.0-generate-002",           // Imagen 3 fallback
+      "imagen-3.0-generate-001",
+    ];
+    let data,res,lastErr;
+    for(const model of imageModels){
+      try{
+        res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,{
+          method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({
+            contents:[{role:"user",parts}],
+            generationConfig:{responseModalities:["IMAGE","TEXT"],temperature:1.0},
+          }),
+        });
+        data=await res.json();
+        if(res.ok){console.log(`[xhs] image gen success with model: ${model}`);break;}
+        lastErr=data?.error?.message||`HTTP ${res.status}`;
+        console.warn(`[xhs] model ${model} failed:`,lastErr);
+      }catch(e){lastErr=e.message;}
+    }
     try{
-      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${geminiKey}`,{
-        method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          contents:[{role:"user",parts}],
-          generationConfig:{responseModalities:["IMAGE","TEXT"],temperature:1.0},
-        }),
-      });
-      const data=await res.json();
-      if(!res.ok){
-        const errMsg=data?.error?.message||`HTTP ${res.status}`;
-        throw new Error(errMsg);
-      }
+      if(!res?.ok){throw new Error(lastErr||"All image models failed");}
       // Find image part in response
       const respParts=data?.candidates?.[0]?.content?.parts||[];
       const imgPart=respParts.find(p=>p.inlineData||p.inline_data);

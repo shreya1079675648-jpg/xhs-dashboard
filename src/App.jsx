@@ -1410,7 +1410,7 @@ export default function App({user,onLogout}={}){
         resp=await fetch("https://api.anthropic.com/v1/messages",{
           method:"POST",
           headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-          body:JSON.stringify({model:"claude-opus-4-5",max_tokens:1500,stream:true,system:systemPrompt,messages:historyMsgs.map(m=>({role:m.role,content:m.content}))}),
+          body:JSON.stringify({model:"claude-opus-4-5",max_tokens:4096,stream:true,system:systemPrompt,messages:historyMsgs.map(m=>({role:m.role,content:m.content}))}),
         });
         if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||`HTTP ${resp.status}`);}
         const reader=resp.body.getReader();const dec=new TextDecoder();
@@ -1427,7 +1427,7 @@ export default function App({user,onLogout}={}){
         resp=await fetch("https://api.openai.com/v1/chat/completions",{
           method:"POST",
           headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},
-          body:JSON.stringify({model:"gpt-4o",max_tokens:1500,stream:true,messages:oaMsgs}),
+          body:JSON.stringify({model:"gpt-4o",max_tokens:4096,stream:true,messages:oaMsgs}),
         });
         if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||`HTTP ${resp.status}`);}
         const reader=resp.body.getReader();const dec=new TextDecoder();
@@ -1439,7 +1439,8 @@ export default function App({user,onLogout}={}){
           }
         }
       } else {
-        // Gemini
+        // Gemini 2.5 Flash — disable thinking + raise output budget so chat isn't truncated.
+        // Concat text from ALL parts (Gemini can split text into multiple parts per chunk).
         const geminiMsgs=historyMsgs.map(m=>({role:m.role==="assistant"?"model":"user",parts:[{text:m.content}]}));
         resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${key}`,{
           method:"POST",
@@ -1447,16 +1448,36 @@ export default function App({user,onLogout}={}){
           body:JSON.stringify({
             system_instruction:{parts:[{text:systemPrompt}]},
             contents:geminiMsgs,
-            generationConfig:{maxOutputTokens:1500},
+            generationConfig:{
+              maxOutputTokens:8192,
+              thinkingConfig:{thinkingBudget:0}, // disable thinking tokens (faster + no truncation)
+            },
           }),
         });
         if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||`HTTP ${resp.status}`);}
         const reader=resp.body.getReader();const dec=new TextDecoder();
+        let buffer="";
         while(true){
           const{done,value}=await reader.read();if(done)break;
-          for(const line of dec.decode(value).split("\n").filter(l=>l.startsWith("data: "))){
-            const raw=line.slice(6);
-            try{const p=JSON.parse(raw);const t=p.candidates?.[0]?.content?.parts?.[0]?.text;if(t){acc+=t;setChatMsgs(prev=>{const u=[...prev];u[u.length-1]={role:"assistant",content:acc};return u;});}}catch{}
+          buffer+=dec.decode(value,{stream:true});
+          // SSE events end with double newline; process complete events only
+          const events=buffer.split("\n\n");
+          buffer=events.pop()||""; // keep incomplete trailing chunk
+          for(const event of events){
+            for(const line of event.split("\n").filter(l=>l.startsWith("data: "))){
+              const raw=line.slice(6).trim();
+              if(!raw||raw==="[DONE]")continue;
+              try{
+                const p=JSON.parse(raw);
+                // Concat text from ALL parts (Gemini splits text + tool_use across parts)
+                const parts=p.candidates?.[0]?.content?.parts||[];
+                const t=parts.map(part=>part.text||"").join("");
+                if(t){
+                  acc+=t;
+                  setChatMsgs(prev=>{const u=[...prev];u[u.length-1]={role:"assistant",content:acc};return u;});
+                }
+              }catch{}
+            }
           }
         }
       }

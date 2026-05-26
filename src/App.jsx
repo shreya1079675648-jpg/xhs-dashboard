@@ -1924,19 +1924,50 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
     parsed=tryParse(escapedCtrl);
     if(parsed)return parsed;
 
-    // Pass 3: replace Chinese punctuation that shouldn't be in JSON syntax positions
-    // Only outside string values is tricky — heuristic: replace ，→, and ：→: outside double-quoted ranges
-    let outside="";let inStr=false;let escape=false;
-    for(let i=0;i<jsonStr.length;i++){
-      const ch=jsonStr[i];
-      if(escape){outside+=ch;escape=false;continue;}
-      if(ch==="\\"){outside+=ch;escape=true;continue;}
-      if(ch==='"'){inStr=!inStr;outside+=ch;continue;}
-      if(!inStr&&ch==="，"){outside+=",";continue;}
-      if(!inStr&&ch==="："){outside+=":";continue;}
-      outside+=ch;
+    // Pass 3: replace Chinese punctuation outside string values
+    let outside="";{let inStr=false;let escape=false;
+      for(let i=0;i<jsonStr.length;i++){
+        const ch=jsonStr[i];
+        if(escape){outside+=ch;escape=false;continue;}
+        if(ch==="\\"){outside+=ch;escape=true;continue;}
+        if(ch==='"'){inStr=!inStr;outside+=ch;continue;}
+        if(!inStr&&ch==="，"){outside+=",";continue;}
+        if(!inStr&&ch==="："){outside+=":";continue;}
+        outside+=ch;
+      }
     }
     parsed=tryParse(outside);
+    if(parsed)return parsed;
+
+    // Pass 4: escape unescaped INNER double quotes (AI loves to do "reason": "他说"很好"" — invalid JSON)
+    // Heuristic: a " is a string terminator iff next non-whitespace char is one of , } ] :
+    // Otherwise it's an inner quote that needs escaping to \"
+    let fixedInner="";{let inStr=false;let esc=false;let i=0;
+      while(i<outside.length){
+        const ch=outside[i];
+        if(esc){fixedInner+=ch;esc=false;i++;continue;}
+        if(ch==="\\"){fixedInner+=ch;esc=true;i++;continue;}
+        if(ch==='"'){
+          if(!inStr){
+            inStr=true;fixedInner+='"';i++;
+          } else {
+            // Look ahead: skip whitespace, find next meaningful char
+            let j=i+1;
+            while(j<outside.length&&/\s/.test(outside[j]))j++;
+            const next=outside[j];
+            if(next===','||next==='}'||next===']'||next===':'||j>=outside.length){
+              inStr=false;fixedInner+='"';i++;
+            } else {
+              // Inner quote — escape it
+              fixedInner+='\\"';i++;
+            }
+          }
+        } else {
+          fixedInner+=ch;i++;
+        }
+      }
+    }
+    parsed=tryParse(fixedInner);
     if(parsed)return parsed;
 
     // Final fail

@@ -1887,36 +1887,70 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
   };
 
   // Robust JSON extractor — handles AI quirks: smart quotes, trailing commas,
-  // unescaped newlines/tabs inside strings, paragraph/line separators.
+  // unescaped newlines/tabs inside strings, paragraph/line separators, Python literals.
   const parseScoreJSON=(text)=>{
     const cb=text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     const raw=cb?cb[1]:text;
     const s=raw.indexOf("{"),e=raw.lastIndexOf("}");
     if(s===-1||e===-1)throw new Error("未找到 JSON，请重试");
     let jsonStr=raw.slice(s,e+1);
-    // Clean common AI quirks (unicode chars via fromCharCode to avoid JS parser issues)
+    // Pass 1: Unicode + smart quote cleanup
     const SMART_DOUBLE=new RegExp(String.fromCharCode(0x201C)+"|"+String.fromCharCode(0x201D),"g");
     const SMART_SINGLE=new RegExp(String.fromCharCode(0x2018)+"|"+String.fromCharCode(0x2019),"g");
     const NBSP=new RegExp(String.fromCharCode(0x00A0),"g");
     const LINE_SEP=new RegExp(String.fromCharCode(0x2028)+"|"+String.fromCharCode(0x2029),"g");
+    const CN_COMMA=new RegExp(String.fromCharCode(0xFF0C),"g"); // 中文逗号 ，
+    const CN_COLON=new RegExp(String.fromCharCode(0xFF1A),"g"); // 中文冒号 ：
     jsonStr=jsonStr
       .replace(SMART_DOUBLE,'"')
       .replace(SMART_SINGLE,"'")
-      .replace(/,(\s*[}\]])/g,"$1")
       .replace(NBSP," ")
-      .replace(LINE_SEP,"\\n");
-    try{return JSON.parse(jsonStr);}
-    catch(e1){
-      // Fallback: escape unescaped \n \r \t inside string values
-      const fixed=jsonStr.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g,(m,inner)=>{
-        return '"'+inner.replace(/\n/g,"\\n").replace(/\r/g,"\\r").replace(/\t/g,"\\t")+'"';
-      });
-      try{return JSON.parse(fixed);}
-      catch(e2){
-        console.error("[xhs] JSON parse failed. Raw:",jsonStr);
-        throw new Error(`AI 返回 JSON 解析失败：${e1.message}（已打印原始响应到 Console）`);
+      .replace(LINE_SEP,"\\n")
+      // Python literals → JSON literals
+      .replace(/\bTrue\b/g,"true")
+      .replace(/\bFalse\b/g,"false")
+      .replace(/\bNone\b/g,"null")
+      // Trailing commas before } or ]
+      .replace(/,(\s*[}\]])/g,"$1");
+
+    const tryParse=(s)=>{try{return JSON.parse(s);}catch(e){return null;}};
+    let parsed=tryParse(jsonStr);
+    if(parsed)return parsed;
+
+    // Pass 2: escape unescaped control chars inside strings
+    const escapedCtrl=jsonStr.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g,(m,inner)=>{
+      return '"'+inner.replace(/\n/g,"\\n").replace(/\r/g,"\\r").replace(/\t/g,"\\t")+'"';
+    });
+    parsed=tryParse(escapedCtrl);
+    if(parsed)return parsed;
+
+    // Pass 3: replace Chinese punctuation that shouldn't be in JSON syntax positions
+    // Only outside string values is tricky — heuristic: replace ，→, and ：→: outside double-quoted ranges
+    let outside="";let inStr=false;let escape=false;
+    for(let i=0;i<jsonStr.length;i++){
+      const ch=jsonStr[i];
+      if(escape){outside+=ch;escape=false;continue;}
+      if(ch==="\\"){outside+=ch;escape=true;continue;}
+      if(ch==='"'){inStr=!inStr;outside+=ch;continue;}
+      if(!inStr&&ch==="，"){outside+=",";continue;}
+      if(!inStr&&ch==="："){outside+=":";continue;}
+      outside+=ch;
+    }
+    parsed=tryParse(outside);
+    if(parsed)return parsed;
+
+    // Final fail
+    console.error("[xhs] JSON parse failed. Raw text length:",jsonStr.length);
+    console.error("[xhs] JSON parse failed. Full raw:",jsonStr);
+    // Try to identify the failure position
+    try{JSON.parse(jsonStr);}catch(e){
+      const m=e.message.match(/position (\d+)/);
+      if(m){
+        const pos=parseInt(m[1]);
+        console.error("[xhs] Failure context (50 chars around pos "+pos+"):",jsonStr.slice(Math.max(0,pos-50),pos+50));
       }
     }
+    throw new Error(`AI 返回的 JSON 数据解析失败（原始响应已输出到控制台）`);
   };
 
   const SCORING_PROMPT=`你是小红书爆款评分专家。请严格按以下完整规则打分，只输出 JSON，不输出任何其他内容。

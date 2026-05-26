@@ -1849,8 +1849,18 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
       }
       showToast(`✓ 规律报告已生成 · 基于 ${reviewNotes.length} 篇`,"success");
     }catch(err){
-      setPatternError(`⚠ AI 分析失败：${err.message}`);
-      showToast(`⚠ AI 分析失败：${err.message}`,"error");
+      // Auto-retry on rate-limit (429 / quota exceeded)
+      const msg=err.message||"";
+      const retryMatch=msg.match(/retry in (\d+(?:\.\d+)?)s/);
+      const isRateLimit=msg.includes("quota")||msg.includes("rate limit")||msg.includes("429");
+      if(isRateLimit&&retryMatch){
+        const waitSec=Math.ceil(parseFloat(retryMatch[1]))+1;
+        setPatternError(`⏳ 触发限速，${waitSec} 秒后自动重试…`);
+        await new Promise(r=>setTimeout(r,waitSec*1000));
+        return analyzePatternsAI(); // retry recursively (once)
+      }
+      setPatternError(`⚠ AI 分析失败：${msg}`);
+      showToast(`⚠ AI 分析失败：${msg.slice(0,60)}`,"error");
     }finally{setPatternLoading(false);}
   };
 

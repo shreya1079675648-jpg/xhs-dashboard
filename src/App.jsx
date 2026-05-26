@@ -2946,16 +2946,32 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                               </div>
                             </div>
                           )}
-                          {/* Generated raster image (Gemini) */}
+                          {/* Generated raster image (Gemini or Pollinations) */}
                           {m.imageUrl&&(
-                            <div className="rounded-2xl overflow-hidden" style={{border:`1px solid ${ACCENT}44`}}>
-                              <img src={m.imageUrl} alt="AI生成封面" className="w-full" style={{display:"block",aspectRatio:"3/4",objectFit:"cover"}}/>
-                              <div className="px-3 py-2 flex gap-2" style={{backgroundColor:"rgba(200,255,0,0.06)"}}>
+                            <div className="rounded-2xl overflow-hidden relative" style={{border:`1px solid ${ACCENT}44`,minHeight:"200px",backgroundColor:"#0a0a0a"}}>
+                              {/* Loading placeholder (visible until img loads or errors) */}
+                              <div className="absolute inset-0 flex items-center justify-center text-[11px] z-0" style={{color:"#555"}}>
+                                {m.externalUrl?"⏳ 外部图床生成中（10-60秒）…":"加载中…"}
+                              </div>
+                              <img src={m.imageUrl} alt="AI生成封面"
+                                onLoad={(ev)=>{ev.currentTarget.style.opacity="1";}}
+                                onError={(ev)=>{ev.currentTarget.style.display="none";ev.currentTarget.parentElement.querySelector(".img-err")?.style.removeProperty("display");}}
+                                className="w-full relative z-10 transition-opacity duration-300"
+                                style={{display:"block",aspectRatio:"3/4",objectFit:"cover",opacity:m.externalUrl?"0.01":"1"}}
+                                referrerPolicy="no-referrer"/>
+                              <div className="img-err absolute inset-0 z-20 p-4 flex flex-col items-center justify-center text-center" style={{display:"none",backgroundColor:"rgba(127,29,29,0.2)"}}>
+                                <div className="text-2xl mb-2">😵</div>
+                                <div className="text-[11px] font-black mb-2" style={{color:"#fca5a5"}}>图片加载失败</div>
+                                <div className="text-[10px] mb-3" style={{color:"#888"}}>外部图床（Pollinations）可能被你的网络拦截</div>
+                                <a href={m.imageUrl} target="_blank" rel="noreferrer"
+                                  className="text-[10px] underline" style={{color:ACCENT}}>直接在浏览器打开图片 ↗</a>
+                              </div>
+                              <div className="px-3 py-2 flex gap-2 relative z-10" style={{backgroundColor:"rgba(200,255,0,0.06)"}}>
                                 <button onClick={()=>{if(selected)setNoteCover(selected.id,m.imageUrl);else setCoverBgUrl(m.imageUrl);}}
                                   className="flex-1 py-1.5 rounded-xl text-[11px] font-black transition hover:brightness-110"
                                   style={{backgroundColor:ACCENT,color:"black"}}>✓ 设为封面背景</button>
                                 <button onClick={()=>{
-                                  const a=document.createElement("a");a.href=m.imageUrl;a.download=`cover-${Date.now()}.png`;a.click();
+                                  const a=document.createElement("a");a.href=m.imageUrl;a.download=`cover-${Date.now()}.png`;a.target="_blank";a.click();
                                 }}
                                   className="px-3 py-1.5 rounded-xl text-[11px] font-black transition hover:opacity-70"
                                   style={{backgroundColor:"rgba(255,255,255,0.06)",color:"#888"}}>↓ PNG</button>

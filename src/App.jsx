@@ -1833,40 +1833,8 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
         if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`HTTP ${res.status}`);}
         const d=await res.json();reply=d.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"";
       }
-      // Parse JSON — multi-pass cleaning to handle AI quirks
-      const cb=reply.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-      let raw=cb?cb[1]:reply;
-      const s=raw.indexOf("{"),e=raw.lastIndexOf("}");
-      if(s===-1||e===-1)throw new Error("AI 响应中未找到 JSON");
-      let jsonStr=raw.slice(s,e+1);
-      // CLEAN_START
-      const SMART_DOUBLE=new RegExp(String.fromCharCode(0x201C)+"|"+String.fromCharCode(0x201D),"g");
-      const SMART_SINGLE=new RegExp(String.fromCharCode(0x2018)+"|"+String.fromCharCode(0x2019),"g");
-      const NBSP=new RegExp(String.fromCharCode(0x00A0),"g");
-      const LINE_SEP=new RegExp(String.fromCharCode(0x2028)+"|"+String.fromCharCode(0x2029),"g");
-      const TRAILING_COMMA=/,(\s*[}\]])/g;
-      jsonStr=jsonStr
-        .replace(SMART_DOUBLE,'"')
-        .replace(SMART_SINGLE,"'")
-        .replace(TRAILING_COMMA,"$1")
-        .replace(NBSP," ")
-        .replace(LINE_SEP,"\\n");
-      // CLEAN_END
-      /* legacy block (broken regex literals removed below) */
-      let parsed;
-      try{
-        parsed=JSON.parse(jsonStr);
-      }catch(parseErr){
-        // Fallback: try to escape unescaped newlines inside strings
-        const fixed=jsonStr.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g,(m,inner)=>{
-          return '"'+inner.replace(/\n/g,"\\n").replace(/\r/g,"\\r").replace(/\t/g,"\\t")+'"';
-        });
-        try{parsed=JSON.parse(fixed);}
-        catch(e2){
-          console.error("[pattern] JSON parse failed. Raw:",jsonStr);
-          throw new Error(`JSON 解析失败：${parseErr.message}。已打印原始响应到 console，可截图反馈。`);
-        }
-      }
+      // Reuse the robust 4-pass parser from scoring (handles smart quotes, inner quotes, Python literals etc.)
+      const parsed=parseScoreJSON(reply);
       const result={
         ...parsed,
         analyzedAt:new Date().toISOString(),

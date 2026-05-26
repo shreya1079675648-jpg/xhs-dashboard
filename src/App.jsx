@@ -1698,25 +1698,37 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
         console.warn(`[xhs] model ${model} threw:`,e.message);
       }
     }
-    // If all candidate models failed, fetch model list to diagnose and surface a helpful message.
+    // If all Gemini image models failed (most likely quota:0 = free tier), fall back to Pollinations.ai (free, no key).
     if(!res?.ok){
-      let diagnosticMsg=lastErr||"All image models failed";
+      console.warn("[xhs] All Gemini image models failed. Falling back to Pollinations.ai (free)");
       try{
-        const listRes=await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`);
-        const listData=await listRes.json();
-        const allModels=(listData.models||[]).map(m=>m.name.replace("models/",""));
-        const imageCapable=allModels.filter(n=>/image|imagen|vision|nano/i.test(n));
-        console.log("[xhs] === ALL Gemini models available to your key ===");
-        console.log(allModels);
-        console.log("[xhs] image-related models:",imageCapable);
-        diagnosticMsg=imageCapable.length>0
-          ?`你账号能用的图像模型：${imageCapable.join("、 ")}（详细打印在 F12 Console）`
-          :`你账号没有图像生成模型。完整模型列表打印在 F12 Console。最可能：\n1. 你 Gemini 项目在中国大陆 region，图像生成对该 region 不可用\n2. 需要去 Google Cloud Console enable Vertex AI Imagen`;
-      }catch(listErr){
-        console.warn("[xhs] failed to list models",listErr);
-      }
-      setCoverMsgs(p=>[...p.filter(m=>!m.isGenerating),{role:"assistant",content:`⚠ ${diagnosticMsg}`}]);
-      setGenImgLoading(false);
+        // Build English prompt for better Flux results
+        const englishPrompt=`Xiaohongshu social media cover, vertical 3:4 ratio. Chinese magazine aesthetic, kinfolk style, premium minimal design.
+Main text: "${coverMainText}" (bold Chinese typography, large readable)
+${descText?`Style: ${descText}`:""}
+Warm color palette, editorial layout, negative space, film grain, soft lighting.
+Include small "@Shreya" signature bottom-right in neon yellow-green.
+No text watermarks or logos.`;
+        const pollUrl=`https://image.pollinations.ai/prompt/${encodeURIComponent(englishPrompt)}?width=810&height=1080&model=flux&nologo=true&enhance=true&seed=${Math.floor(Math.random()*99999)}`;
+        // Fetch image and convert to data URL so we can save it the same way as Gemini output
+        const imgResp=await fetch(pollUrl);
+        if(!imgResp.ok)throw new Error(`Pollinations HTTP ${imgResp.status}`);
+        const blob=await imgResp.blob();
+        const dataUrl=await new Promise((res,rej)=>{
+          const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(blob);
+        });
+        setCoverMsgs(p=>[...p.filter(m=>!m.isGenerating),{
+          role:"assistant",
+          content:`✦ 封面图已生成（Pollinations.ai · Flux 免费模型）\n\n💡 你的 Gemini 图像 API 没开通付费，降级用了免费方案。质量略低于 Nano Banana。`,
+          imageUrl:dataUrl,
+        }]);
+      }catch(fallbackErr){
+        console.error("[xhs] Pollinations fallback failed:",fallbackErr);
+        setCoverMsgs(p=>[...p.filter(m=>!m.isGenerating),{
+          role:"assistant",
+          content:`⚠ 所有图像方案都失败了：\n\n1. Gemini 图像 API：你账号未开通付费层级（limit: 0）\n2. Pollinations 免费备选：${fallbackErr.message}\n\n要解锁 Gemini Nano Banana，需要去 https://aistudio.google.com/billing 升级 Paid Tier。`,
+        }]);
+      }finally{setGenImgLoading(false);}
       return;
     }
     try{

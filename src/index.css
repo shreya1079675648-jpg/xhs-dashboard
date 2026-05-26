@@ -1,10 +1,24 @@
 @import "tailwindcss";
 
+:root {
+--bg: #FBF8F4;
+--card: #FFFFFF;
+--border: #EDE8E3;
+--accent: #7DD3B4;
+--muted: #9B9B9B;
+--text-primary: #3D3D3D;
+--text-secondary: #9B9B9B;
+--shadow-card: 0 4px 24px rgba(0,0,0,0.06);
+--shadow-hover: 0 8px 32px rgba(0,0,0,0.10);
+}
+
 body {
-  margin: 0;
+margin: 0;
+background-color: var(--bg);
+color: var(--text-primary);
 }
 
 #root {
-  width: 100%;
-  min-height: 100vh;
+width: 100%;
+min-height: 100vh;
 }

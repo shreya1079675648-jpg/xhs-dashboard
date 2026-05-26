@@ -1350,11 +1350,17 @@ export default function App({user,onLogout}={}){
   /* ── AI Chat helpers ── */
   const parseApplyBlocks=(content)=>{
     const blocks=[];
-    const m=(tag)=>{const r=new RegExp(`【${tag}】([\\s\\S]*?)【/${tag}】`);const x=content.match(r);return x?x[1].trim():null;};
-    const t=m("标题");const b=m("正文");const c=m("封面");
-    if(t)blocks.push({type:"title",label:"标题",value:t});
-    if(b)blocks.push({type:"body",label:"正文",value:b});
-    if(c)blocks.push({type:"cover",label:"封面",value:c});
+    const allMatches=(tag,type,label)=>{
+      const r=new RegExp(`【${tag}】([\\s\\S]*?)【/${tag}】`,"g");
+      let m;
+      while((m=r.exec(content))!==null){
+        const v=m[1].trim();
+        if(v)blocks.push({type,label,value:v});
+      }
+    };
+    allMatches("标题","title","标题");
+    allMatches("正文","body","正文");
+    allMatches("封面","cover","封面");
     return blocks;
   };
 
@@ -2787,12 +2793,12 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                               {/* Apply blocks with preview */}
                               {blocks.length>0&&(
                                 <div className="flex flex-col gap-2 mt-1.5 w-full max-w-[85%]">
-                                  {blocks.map(block=>(
-                                    <div key={block.type} className="rounded-xl p-3"
+                                  {blocks.map((block,bi)=>(
+                                    <div key={`${block.type}-${bi}`} className="rounded-xl p-3"
                                       style={{backgroundColor:"rgba(200,255,0,0.06)",border:`1px solid ${ACCENT}33`}}>
                                       <div className="flex items-center justify-between gap-2 mb-2">
                                         <span className="text-[9px] font-black tracking-widest" style={{color:ACCENT}}>
-                                          AI 建议 · {block.label}
+                                          AI 建议 {blocks.filter(b=>b.type===block.type).length>1?`#${blocks.filter((b,i)=>b.type===block.type&&i<=bi).length} `:""}· {block.label}
                                         </span>
                                         <button onClick={()=>applyBlock(block)}
                                           className="flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black transition hover:brightness-110 shrink-0"

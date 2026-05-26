@@ -1698,37 +1698,21 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
         console.warn(`[xhs] model ${model} threw:`,e.message);
       }
     }
-    // If all Gemini image models failed (most likely quota:0 = free tier), fall back to Pollinations.ai (free, no key).
+    // If all Gemini image models failed (quota:0 = free tier), use Pollinations.ai via direct img URL (bypasses CORS).
     if(!res?.ok){
-      console.warn("[xhs] All Gemini image models failed. Falling back to Pollinations.ai (free)");
-      try{
-        // Build English prompt for better Flux results
-        const englishPrompt=`Xiaohongshu social media cover, vertical 3:4 ratio. Chinese magazine aesthetic, kinfolk style, premium minimal design.
-Main text: "${coverMainText}" (bold Chinese typography, large readable)
-${descText?`Style: ${descText}`:""}
-Warm color palette, editorial layout, negative space, film grain, soft lighting.
-Include small "@Shreya" signature bottom-right in neon yellow-green.
-No text watermarks or logos.`;
-        const pollUrl=`https://image.pollinations.ai/prompt/${encodeURIComponent(englishPrompt)}?width=810&height=1080&model=flux&nologo=true&enhance=true&seed=${Math.floor(Math.random()*99999)}`;
-        // Fetch image and convert to data URL so we can save it the same way as Gemini output
-        const imgResp=await fetch(pollUrl);
-        if(!imgResp.ok)throw new Error(`Pollinations HTTP ${imgResp.status}`);
-        const blob=await imgResp.blob();
-        const dataUrl=await new Promise((res,rej)=>{
-          const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(blob);
-        });
-        setCoverMsgs(p=>[...p.filter(m=>!m.isGenerating),{
-          role:"assistant",
-          content:`✦ 封面图已生成（Pollinations.ai · Flux 免费模型）\n\n💡 你的 Gemini 图像 API 没开通付费，降级用了免费方案。质量略低于 Nano Banana。`,
-          imageUrl:dataUrl,
-        }]);
-      }catch(fallbackErr){
-        console.error("[xhs] Pollinations fallback failed:",fallbackErr);
-        setCoverMsgs(p=>[...p.filter(m=>!m.isGenerating),{
-          role:"assistant",
-          content:`⚠ 所有图像方案都失败了：\n\n1. Gemini 图像 API：你账号未开通付费层级（limit: 0）\n2. Pollinations 免费备选：${fallbackErr.message}\n\n要解锁 Gemini Nano Banana，需要去 https://aistudio.google.com/billing 升级 Paid Tier。`,
-        }]);
-      }finally{setGenImgLoading(false);}
+      console.warn("[xhs] All Gemini image models failed. Using Pollinations.ai direct URL");
+      // Build English prompt for better Flux results
+      const englishPrompt=`Xiaohongshu social media cover image, vertical 3:4 ratio, kinfolk magazine aesthetic. Main Chinese text: "${coverMainText}" rendered in large bold typography. ${descText?descText:"warm muted color palette, editorial layout, negative space"}. Premium minimal design.`;
+      const seed=Math.floor(Math.random()*99999);
+      const pollUrl=`https://image.pollinations.ai/prompt/${encodeURIComponent(englishPrompt)}?width=810&height=1080&model=flux&nologo=true&seed=${seed}`;
+      // Use URL directly — browser <img> bypasses CORS. Pollinations generates on first GET.
+      setCoverMsgs(p=>[...p.filter(m=>!m.isGenerating),{
+        role:"assistant",
+        content:`✦ 封面图生成中（Pollinations.ai · Flux 免费模型，需 10-30 秒）\n\n💡 你的 Gemini 图像 API 没开通付费层级（limit: 0），降级用了免费方案。\n要使用 Nano Banana 高质量出图：https://aistudio.google.com/billing 升级 Paid Tier。`,
+        imageUrl:pollUrl,
+        externalUrl:true, // flag: imageUrl is an external URL, not base64 data URL
+      }]);
+      setGenImgLoading(false);
       return;
     }
     try{

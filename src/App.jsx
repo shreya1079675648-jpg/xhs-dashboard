@@ -33,11 +33,11 @@ const Btn=({children,accent,small,className="",style={},disabled,...props})=>(
 );
 const Input=({className="",...props})=>(
   <input className={`w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder-[#444] outline-none transition ${className}`}
-    style={{backgroundColor:"#1a1a1a",border:"1px solid #2a2a2a"}} {...props}/>
+    style={{backgroundColor:"#F8F5F1",border:"1px solid #EDE8E3"}} {...props}/>
 );
 const Textarea=({className="",...props})=>(
   <textarea className={`w-full rounded-xl px-4 py-3 text-sm text-white placeholder-[#444] outline-none transition leading-relaxed ${className}`}
-    style={{backgroundColor:"#1a1a1a",border:"1px solid #2a2a2a"}} {...props}/>
+    style={{backgroundColor:"#F8F5F1",border:"1px solid #EDE8E3"}} {...props}/>
 );
 const MetricBox=({label,value,sub})=>(
   <div className="rounded-2xl p-5" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
@@ -63,10 +63,10 @@ const StTag=({tagKey})=>{
 const MetricRow=({label,actual,expected,deviationPct})=>{
   const isPos=deviationPct>=0;
   return(
-    <div className="grid grid-cols-4 gap-2 items-center py-2.5 border-b" style={{borderColor:BORDER}}>
+    <div className="grid grid-cols-4 gap-2 items-center py-2.5 border-b" style={{borderColor:"#EDE8E3"}}>
       <span className="text-xs font-black text-[#888]">{label}</span>
       <span className="text-sm font-black text-white text-center">{fmtNum(actual)}{typeof actual==="number"&&actual<100&&label.includes("率")?"%":""}</span>
-      <span className="text-xs text-center" style={{color:"#555"}}>{fmtNum(expected)}{typeof expected==="number"&&expected<100&&label.includes("率")?"%":""}</span>
+      <span className="text-xs text-center" style={{color:"#ABABAB"}}>{fmtNum(expected)}{typeof expected==="number"&&expected<100&&label.includes("率")?"%":""}</span>
       <span className={`text-xs font-black text-center rounded-lg px-2 py-1`}
         style={{color:isPos?"#86efac":"#fca5a5",backgroundColor:isPos?"rgba(20,83,45,0.4)":"rgba(127,29,29,0.4)"}}>
         {isPos?"+":""}{deviationPct}%
@@ -76,15 +76,15 @@ const MetricRow=({label,actual,expected,deviationPct})=>{
 };
 
 const ProbBar=({probability,issue,detail})=>(
-  <div className="mb-3 p-3 rounded-xl" style={{backgroundColor:"#111",border:`1px solid ${BORDER}`}}>
+  <div className="mb-3 p-3 rounded-xl" style={{backgroundColor:"#FFFFFF",border:`1px solid ${BORDER}`}}>
     <div className="flex items-center justify-between mb-1.5">
       <span className="text-xs font-black text-white">{issue}</span>
       <span className="text-[10px] font-black" style={{color:ACCENT}}>{probability}%</span>
     </div>
-    <div className="h-1.5 rounded-full mb-2" style={{backgroundColor:"#2a2a2a"}}>
+    <div className="h-1.5 rounded-full mb-2" style={{backgroundColor:"#F0EBE6"}}>
       <div className="h-full rounded-full transition-all duration-500" style={{width:`${probability}%`,backgroundColor:probability>=60?ACCENT:probability>=30?"#f59e0b":"#6b7280"}}/>
     </div>
-    <p className="text-[11px]" style={{color:"#666"}}>{detail}</p>
+    <p className="text-[11px]" style={{color:"#9B9B9B"}}>{detail}</p>
   </div>
 );
 
@@ -102,8 +102,8 @@ const ActionItem=({action,checked,onToggle})=>{
           <span className="text-[9px] font-black rounded-full px-2 py-0.5" style={{backgroundColor:pc.bg,color:pc.color}}>{pc.label}</span>
           <span className="text-xs font-bold" style={{color:checked?"#555":"white",textDecoration:checked?"line-through":"none"}}>{action.action}</span>
         </div>
-        <p className="text-[11px]" style={{color:"#666"}}>{action.detail}</p>
-        {action.expectedEffect&&<p className="text-[10px] mt-1 font-black" style={{color:"#C8FF00"}}>{action.expectedEffect}</p>}
+        <p className="text-[11px]" style={{color:"#9B9B9B"}}>{action.detail}</p>
+        {action.expectedEffect&&<p className="text-[10px] mt-1 font-black" style={{color:"#7DD3B4"}}>{action.expectedEffect}</p>}
       </div>
     </div>
   );
@@ -115,7 +115,7 @@ const RangeBar=({label,min,median,max,unit=""})=>(
       <span className="text-[10px] font-black text-[#888] uppercase tracking-widest">{label}</span>
       <span className="text-xs font-black" style={{color:ACCENT}}>{fmtNum(median)}{unit}</span>
     </div>
-    <div className="relative h-2 rounded-full" style={{backgroundColor:"#2a2a2a"}}>
+    <div className="relative h-2 rounded-full" style={{backgroundColor:"#F0EBE6"}}>
       <div className="absolute h-full rounded-full" style={{
         left:`${Math.max(0,(min/(max*1.2))*100)}%`,
         width:`${Math.min(100,((max-min)/(max*1.2))*100)}%`,
@@ -127,8 +127,8 @@ const RangeBar=({label,min,median,max,unit=""})=>(
       }}/>
     </div>
     <div className="flex justify-between mt-1">
-      <span className="text-[9px]" style={{color:"#444"}}>{fmtNum(min)}</span>
-      <span className="text-[9px]" style={{color:"#444"}}>{fmtNum(max)}</span>
+      <span className="text-[9px]" style={{color:"#BCBCBC"}}>{fmtNum(min)}</span>
+      <span className="text-[9px]" style={{color:"#BCBCBC"}}>{fmtNum(max)}</span>
     </div>
   </div>
 );
@@ -140,7 +140,7 @@ const SnapshotPill=({snap,active,onClick})=>{
       className="flex flex-col items-center px-4 py-2 rounded-xl text-[10px] font-black transition-all"
       style={{backgroundColor:active?ACCENT:"#1a1a1a",color:active?"black":"#888",border:`1px solid ${active?ACCENT:BORDER}`}}>
       <span>{snap.type}</span>
-      {hasD&&<span className="text-[8px] mt-0.5" style={{color:active?"black":"#C8FF00"}}>已诊断</span>}
+      {hasD&&<span className="text-[8px] mt-0.5" style={{color:active?"black":"#7DD3B4"}}>已诊断</span>}
     </button>
   );
 };
@@ -154,7 +154,7 @@ const NoteChip=({note,todayStr,onClick,onDragStart})=>{
       onClick={e=>{e.stopPropagation();onClick(note);}}
       onDragStart={e=>onDragStart(e,note)}
       className="group flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-left text-[11px] font-black tracking-tight transition hover:brightness-125"
-      style={{backgroundColor:note.status==="已发布"?"rgba(200,255,0,0.14)":"rgba(255,255,255,0.07)",color:note.status==="已发布"?ACCENT:color}}
+      style={{backgroundColor:note.status==="已发布"?"rgba(200,255,0,0.14)":"rgba(0,0,0,0.04)",color:note.status==="已发布"?ACCENT:color}}
       title={note.title}>
       <span className="h-1.5 w-1.5 shrink-0 rounded-full opacity-70" style={{backgroundColor:dot}}/>
       <span className="min-w-0 flex-1 truncate">{note.title}</span>
@@ -174,14 +174,14 @@ const DayCell=({day,dateStr,notes,isToday,todayStr,onNoteClick,onDragStart,onDro
       onDrop={e=>{setIsDragOver(false);onDrop(e,dateStr);}}
       className="relative min-h-[96px] rounded-xl p-2 transition-all duration-150"
       style={{
-        backgroundColor:isDragOver?"rgba(200,255,0,0.08)":hasNotes?"rgba(255,255,255,0.03)":"transparent",
+        backgroundColor:isDragOver?"rgba(200,255,0,0.08)":hasNotes?"rgba(0,0,0,0.02)":"transparent",
         outline:isDragOver?`1px solid ${ACCENT}`:"none",
         opacity:isPast?0.4:1,
       }}>
       {/* Date number */}
       <div className="mb-2">
         <span className="inline-flex h-7 min-w-[28px] items-center justify-center rounded-full text-[15px] font-black px-1"
-          style={{backgroundColor:isToday?ACCENT:"transparent",color:isToday?"black":"rgba(255,255,255,0.28)"}}>
+          style={{backgroundColor:isToday?ACCENT:"transparent",color:isToday?"black":"rgba(0,0,0,0.2)"}}>
           {day}
         </span>
       </div>
@@ -191,7 +191,7 @@ const DayCell=({day,dateStr,notes,isToday,todayStr,onNoteClick,onDragStart,onDro
           <NoteChip key={n.id} note={n} todayStr={todayStr} onClick={onNoteClick} onDragStart={onDragStart}/>
         ))}
         {notes.length>2&&(
-          <div className="px-1 text-[10px] font-bold" style={{color:"rgba(255,255,255,0.28)"}}>+{notes.length-2}</div>
+          <div className="px-1 text-[10px] font-bold" style={{color:"rgba(0,0,0,0.2)"}}>+{notes.length-2}</div>
         )}
       </div>
       {isDragOver&&(
@@ -215,7 +215,7 @@ const CalStatCard=({label,value,highlight=false,active=false,onClick})=>(
     }}>
     <div className="text-4xl font-black">{value}</div>
     <div className="mt-1 text-[11px] font-black uppercase tracking-[0.18em] flex items-center gap-1.5"
-      style={{color:highlight?"rgba(0,0,0,0.55)":active?ACCENT:"rgba(255,255,255,0.42)"}}>
+      style={{color:highlight?"rgba(0,0,0,0.55)":active?ACCENT:"rgba(0,0,0,0.35)"}}>
       {label}
       {onClick&&!highlight&&<span className="text-[8px] opacity-60">→</span>}
     </div>
@@ -225,7 +225,7 @@ const CalStatCard=({label,value,highlight=false,active=false,onClick})=>(
 /* ═══════════════════════════ CAL NOTE MODAL ════════════════════════════════ */
 const CAL_STATUS_OPTIONS=["待写","草稿","待发布","已发布"];
 const CalNoteModal=({note,onClose,onUpdate,onDelete})=>{
-  const color=TYPE_COLOR[note.type]||"#C8FF00";
+  const color=TYPE_COLOR[note.type]||"#7DD3B4";
   const [editStatus,setEditStatus]=useState(note.status);
   const [editDate,setEditDate]=useState(note.publish_date||"");
   const [editTitle,setEditTitle]=useState(note.title);
@@ -238,12 +238,12 @@ const CalNoteModal=({note,onClose,onUpdate,onDelete})=>{
   };
   return(
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-      style={{backgroundColor:"rgba(0,0,0,0.75)",backdropFilter:"blur(6px)"}}
+      style={{backgroundColor:"rgba(0,0,0,0.3)",backdropFilter:"blur(6px)"}}
       onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
       <div className="w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl overflow-hidden"
-        style={{backgroundColor:"#111",border:"1px solid #1e1e1e",maxHeight:"90vh",overflowY:"auto"}}>
+        style={{backgroundColor:"#FFFFFF",border:"1px solid #EDE8E3",maxHeight:"90vh",overflowY:"auto"}}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4" style={{borderBottom:"1px solid #1e1e1e"}}>
+        <div className="flex items-center justify-between px-6 pt-6 pb-4" style={{borderBottom:"1px solid #EDE8E3"}}>
           <div className="flex items-center gap-2">
             <span className="rounded-full px-3 py-1 text-[11px] font-black"
               style={{backgroundColor:`${color}22`,color}}>{note.type}</span>
@@ -252,32 +252,32 @@ const CalNoteModal=({note,onClose,onUpdate,onDelete})=>{
           </div>
           <button onClick={onClose}
             className="h-8 w-8 rounded-full flex items-center justify-center text-lg transition hover:opacity-70"
-            style={{backgroundColor:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.4)"}}>✕</button>
+            style={{backgroundColor:"rgba(0,0,0,0.04)",color:"rgba(0,0,0,0.3)"}}>✕</button>
         </div>
         {/* Body */}
         <div className="px-6 py-5 space-y-5">
           {/* Title */}
           <div>
-            <label className="text-[9px] font-black tracking-widest mb-2 block" style={{color:"#444"}}>笔记标题</label>
+            <label className="text-[9px] font-black tracking-widest mb-2 block" style={{color:"#BCBCBC"}}>笔记标题</label>
             <textarea rows={2} value={editTitle}
               onChange={e=>setEditTitle(e.target.value)}
               className="w-full rounded-xl px-4 py-3 text-sm font-bold leading-relaxed resize-none outline-none"
-              style={{backgroundColor:"rgba(255,255,255,0.04)",border:"1px solid #1e1e1e",color:"white"}}/>
+              style={{backgroundColor:"rgba(0,0,0,0.03)",border:"1px solid #EDE8E3",color:"#3D3D3D"}}/>
           </div>
           {/* Date + Status row */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[9px] font-black tracking-widest mb-2 block" style={{color:"#444"}}>发布日期</label>
+              <label className="text-[9px] font-black tracking-widest mb-2 block" style={{color:"#BCBCBC"}}>发布日期</label>
               <input type="date" value={editDate}
                 onChange={e=>setEditDate(e.target.value)}
                 className="w-full rounded-xl px-3 py-2.5 text-sm outline-none"
-                style={{backgroundColor:"rgba(255,255,255,0.04)",border:"1px solid #1e1e1e",color:editDate?  "white":"#555",colorScheme:"dark"}}/>
+                style={{backgroundColor:"rgba(0,0,0,0.03)",border:"1px solid #EDE8E3",color:editDate?  "white":"#555",colorScheme:"light"}}/>
             </div>
             <div>
-              <label className="text-[9px] font-black tracking-widest mb-2 block" style={{color:"#444"}}>状态</label>
+              <label className="text-[9px] font-black tracking-widest mb-2 block" style={{color:"#BCBCBC"}}>状态</label>
               <select value={editStatus} onChange={e=>setEditStatus(e.target.value)}
                 className="w-full rounded-xl px-3 py-2.5 text-sm outline-none"
-                style={{backgroundColor:"rgba(255,255,255,0.04)",border:"1px solid #1e1e1e",color:"white",colorScheme:"dark"}}>
+                style={{backgroundColor:"rgba(0,0,0,0.03)",border:"1px solid #EDE8E3",color:"#3D3D3D",colorScheme:"light"}}>
                 {CAL_STATUS_OPTIONS.map(s=><option key={s} value={s}>{s}</option>)}
               </select>
             </div>
@@ -296,20 +296,20 @@ const CalNoteModal=({note,onClose,onUpdate,onDelete})=>{
           )}
           {/* Timeline pill */}
           <div className="flex items-center gap-2">
-            <div className="h-px flex-1" style={{backgroundColor:"#1e1e1e"}}/>
+            <div className="h-px flex-1" style={{backgroundColor:"#F5F0EB"}}/>
             <span className="text-[10px] font-black px-3 py-1 rounded-full"
-              style={{backgroundColor:isPast?"rgba(200,255,0,0.1)":"rgba(255,255,255,0.05)",color:isPast?"#C8FF00":"#555"}}>
+              style={{backgroundColor:isPast?"rgba(200,255,0,0.1)":"rgba(0,0,0,0.03)",color:isPast?"#7DD3B4":"#555"}}>
               {isPast?"已过期日期":"未来排期"}
             </span>
-            <div className="h-px flex-1" style={{backgroundColor:"#1e1e1e"}}/>
+            <div className="h-px flex-1" style={{backgroundColor:"#F5F0EB"}}/>
           </div>
           {/* Notes field */}
           <div>
-            <label className="text-[9px] font-black tracking-widest mb-2 block" style={{color:"#444"}}>备注 / 创作思路</label>
+            <label className="text-[9px] font-black tracking-widest mb-2 block" style={{color:"#BCBCBC"}}>备注 / 创作思路</label>
             <textarea rows={3} value={editNote} placeholder="写点思路、灵感或发布计划..."
               onChange={e=>setEditNote(e.target.value)}
               className="w-full rounded-xl px-4 py-3 text-xs leading-relaxed resize-none outline-none"
-              style={{backgroundColor:"rgba(255,255,255,0.04)",border:"1px solid #1e1e1e",color:"rgba(255,255,255,0.7)"}}/>
+              style={{backgroundColor:"rgba(0,0,0,0.03)",border:"1px solid #EDE8E3",color:"rgba(0,0,0,0.6)"}}/>
           </div>
         </div>
         {/* Footer */}
@@ -317,10 +317,10 @@ const CalNoteModal=({note,onClose,onUpdate,onDelete})=>{
           <div className="flex gap-3">
             <button onClick={onClose}
               className="flex-1 py-3 rounded-2xl text-sm font-black transition hover:opacity-70"
-              style={{backgroundColor:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.5)"}}>取消</button>
+              style={{backgroundColor:"rgba(0,0,0,0.04)",color:"rgba(0,0,0,0.4)"}}>取消</button>
             <button onClick={save}
               className="flex-1 py-3 rounded-2xl text-sm font-black transition hover:brightness-110"
-              style={{backgroundColor:"#C8FF00",color:"black"}}>保存更改</button>
+              style={{backgroundColor:"#7DD3B4",color:"#FFFFFF"}}>保存更改</button>
           </div>
           {onDelete&&(
             <button onClick={()=>{
@@ -342,7 +342,7 @@ const CalNoteModal=({note,onClose,onUpdate,onDelete})=>{
 
 /* ═══════════════════════════ SCORE COMPONENTS ══════════════════════════════ */
 const TIER_META={
-  "🔥":{color:"#C8FF00",   bg:"rgba(200,255,0,0.1)",   label:"高潜爆款", action:"立即发布 · 发布后1h重点监控 · 必要时投少量薯条放大"},
+  "🔥":{color:"#7DD3B4",   bg:"rgba(200,255,0,0.1)",   label:"高潜爆款", action:"立即发布 · 发布后1h重点监控 · 必要时投少量薯条放大"},
   "⭐":{color:"#93c5fd",   bg:"rgba(147,197,253,0.1)", label:"优质内容", action:"直接发布 · 按常规节奏监控数据"},
   "📈":{color:"#fcd34d",   bg:"rgba(252,211,77,0.1)",  label:"合格可发", action:"优化1-2项最弱维度再发"},
   "⚠": {color:"#fb923c",   bg:"rgba(251,146,60,0.1)",  label:"风险较大", action:"至少重做封面或标题再发"},
@@ -351,11 +351,11 @@ const TIER_META={
 
 const ScoreDimRow=({label,score,max,color})=>(
   <div className="flex items-center gap-2">
-    <div className="shrink-0 text-[10px] font-bold" style={{width:"7rem",color:"rgba(255,255,255,0.4)"}}>{label}</div>
-    <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{backgroundColor:"rgba(255,255,255,0.06)"}}>
+    <div className="shrink-0 text-[10px] font-bold" style={{width:"7rem",color:"rgba(0,0,0,0.3)"}}>{label}</div>
+    <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{backgroundColor:"rgba(0,0,0,0.04)"}}>
       <div className="h-full rounded-full" style={{width:`${(score/max)*100}%`,backgroundColor:color,transition:"width 0.7s ease"}}/>
     </div>
-    <div className="shrink-0 text-[11px] font-black" style={{color,width:"2.5rem",textAlign:"right"}}>{score}<span className="text-[9px] font-bold" style={{color:"rgba(255,255,255,0.25)"}}>/{max}</span></div>
+    <div className="shrink-0 text-[11px] font-black" style={{color,width:"2.5rem",textAlign:"right"}}>{score}<span className="text-[9px] font-bold" style={{color:"rgba(0,0,0,0.15)"}}>/{max}</span></div>
   </div>
 );
 
@@ -381,13 +381,13 @@ const ScorePanel=({result,loading,error,onScore,hasKey,onApply,onSaveScore,score
   if(!hasKey)return(
     <div className="flex-1 flex items-center justify-center p-6 text-center">
       <div><div className="text-3xl mb-3">🔑</div>
-      <div className="text-[12px]" style={{color:"#444"}}>先在「AI对话」标签配置 API Key</div></div>
+      <div className="text-[12px]" style={{color:"#BCBCBC"}}>先在「AI对话」标签配置 API Key</div></div>
     </div>
   );
   if(loading)return(
     <div className="flex-1 flex items-center justify-center gap-1 p-6">
-      {[0,120,240].map(d=><span key={d} className="text-2xl animate-bounce" style={{animationDelay:`${d}ms`,color:"#444"}}>·</span>)}
-      <span className="text-[11px] ml-2" style={{color:"#555"}}>AI 评分中…</span>
+      {[0,120,240].map(d=><span key={d} className="text-2xl animate-bounce" style={{animationDelay:`${d}ms`,color:"#BCBCBC"}}>·</span>)}
+      <span className="text-[11px] ml-2" style={{color:"#ABABAB"}}>AI 评分中…</span>
     </div>
   );
   if(!result)return(
@@ -395,9 +395,9 @@ const ScorePanel=({result,loading,error,onScore,hasKey,onApply,onSaveScore,score
       <div className="text-center">
         <div className="text-4xl mb-3">📊</div>
         <div className="text-sm font-black text-white mb-1">笔记爆款潜力评分</div>
-        <div className="text-[11px]" style={{color:"#444"}}>标题×40% + 封面×35% + 正文×25%，满分 100</div>
+        <div className="text-[11px]" style={{color:"#BCBCBC"}}>标题×40% + 封面×35% + 正文×25%，满分 100</div>
       </div>
-      <button onClick={onScore} className="px-6 py-3 rounded-2xl text-sm font-black transition hover:brightness-110" style={{backgroundColor:ACCENT,color:"black"}}>开始 AI 评分</button>
+      <button onClick={onScore} className="px-6 py-3 rounded-2xl text-sm font-black transition hover:brightness-110" style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>开始 AI 评分</button>
       {error&&<div className="text-[11px] px-3 py-2 rounded-xl text-center" style={{backgroundColor:"rgba(127,29,29,0.4)",color:"#fca5a5"}}>⚠ {error}</div>}
     </div>
   );
@@ -413,19 +413,19 @@ const ScorePanel=({result,loading,error,onScore,hasKey,onApply,onSaveScore,score
           <div className="flex items-center gap-4 mb-2">
             <div className="text-5xl font-black" style={{color:tm.color}}>{result.total_score}</div>
             <div>
-              <div className="text-[10px] font-black tracking-widest" style={{color:"rgba(255,255,255,0.3)"}}>/ 100</div>
+              <div className="text-[10px] font-black tracking-widest" style={{color:"rgba(0,0,0,0.2)"}}>/ 100</div>
               <div className="text-sm font-black mt-0.5" style={{color:tm.color}}>{result.tier}</div>
             </div>
             <div className="flex-1"/>
             {onSaveScore&&(
               <button onClick={()=>onSaveScore(result.total_score)}
                 className="text-[10px] font-black px-3 py-1.5 rounded-full transition hover:brightness-110"
-                style={{backgroundColor:ACCENT,color:"black"}}
+                style={{backgroundColor:ACCENT,color:"#FFFFFF"}}
                 title={scoreSavedAt?`上次保存：${new Date(scoreSavedAt).toLocaleString("zh-CN")}`:"将此评分写入笔记的 AI 分数字段"}>
                 💾 保存到笔记
               </button>
             )}
-            <button onClick={onScore} className="text-[10px] font-black px-3 py-1.5 rounded-full transition hover:opacity-70" style={{backgroundColor:"rgba(255,255,255,0.06)",color:"#555"}}>重新评分</button>
+            <button onClick={onScore} className="text-[10px] font-black px-3 py-1.5 rounded-full transition hover:opacity-70" style={{backgroundColor:"rgba(0,0,0,0.04)",color:"#ABABAB"}}>重新评分</button>
           </div>
           {tm.action&&(
             <div className="text-[11px] font-bold mt-1 pt-2" style={{borderTop:`1px solid ${tm.color}33`,color:tm.color}}>
@@ -454,14 +454,14 @@ const ScorePanel=({result,loading,error,onScore,hasKey,onApply,onSaveScore,score
           const barColor=pct>=70?ACCENT:pct>=50?"#fcd34d":"#fb923c";
           const isOpen=open[cat.key];
           return(
-            <div key={cat.key} className="rounded-2xl overflow-hidden" style={{backgroundColor:"rgba(255,255,255,0.03)",border:`1px solid ${BORDER}`}}>
+            <div key={cat.key} className="rounded-2xl overflow-hidden" style={{backgroundColor:"rgba(0,0,0,0.02)",border:`1px solid ${BORDER}`}}>
               <button className="w-full flex items-center gap-3 px-4 py-3" onClick={()=>setOpen(o=>({...o,[cat.key]:!o[cat.key]}))}>
                 <span className="text-[12px] font-black text-white" style={{width:"2rem"}}>{cat.label}</span>
-                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{backgroundColor:"rgba(255,255,255,0.06)"}}>
+                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{backgroundColor:"rgba(0,0,0,0.04)"}}>
                   <div className="h-full rounded-full" style={{width:`${pct}%`,backgroundColor:barColor,transition:"width 0.7s ease"}}/>
                 </div>
-                <span className="text-sm font-black shrink-0" style={{color:barColor}}>{score}<span className="text-[10px] font-bold" style={{color:"rgba(255,255,255,0.25)"}}>/{cat.max}</span></span>
-                <span className="text-[9px]" style={{color:"#444"}}>{isOpen?"▲":"▼"}</span>
+                <span className="text-sm font-black shrink-0" style={{color:barColor}}>{score}<span className="text-[10px] font-bold" style={{color:"rgba(0,0,0,0.15)"}}>/{cat.max}</span></span>
+                <span className="text-[9px]" style={{color:"#BCBCBC"}}>{isOpen?"▲":"▼"}</span>
               </button>
               {isOpen&&catData.details&&(
                 <div className="px-4 pb-4 space-y-2 pt-2" style={{borderTop:`1px solid ${BORDER}`}}>
@@ -470,7 +470,7 @@ const ScorePanel=({result,loading,error,onScore,hasKey,onApply,onSaveScore,score
                     return(
                       <div key={d.k}>
                         <ScoreDimRow label={d.l} score={dd.score??0} max={d.m} color={barColor}/>
-                        {dd.reason&&<div className="text-[9px] mt-0.5 pl-28 leading-relaxed" style={{color:"rgba(255,255,255,0.25)"}}>{dd.reason}</div>}
+                        {dd.reason&&<div className="text-[9px] mt-0.5 pl-28 leading-relaxed" style={{color:"rgba(0,0,0,0.15)"}}>{dd.reason}</div>}
                       </div>
                     );
                   })}
@@ -483,18 +483,18 @@ const ScorePanel=({result,loading,error,onScore,hasKey,onApply,onSaveScore,score
         {/* Predicted metrics */}
         {pm&&(
           <div className="rounded-2xl overflow-hidden" style={{border:`1px solid ${BORDER}`}}>
-            <div className="px-4 py-2.5 flex items-center justify-between" style={{backgroundColor:"rgba(255,255,255,0.03)",borderBottom:`1px solid ${BORDER}`}}>
-              <span className="text-[9px] font-black tracking-widest" style={{color:"rgba(255,255,255,0.3)"}}>发布后 7 天预估数据</span>
-              <span className="text-[9px]" style={{color:"#333"}}>中位数 / 区间</span>
+            <div className="px-4 py-2.5 flex items-center justify-between" style={{backgroundColor:"rgba(0,0,0,0.02)",borderBottom:`1px solid ${BORDER}`}}>
+              <span className="text-[9px] font-black tracking-widest" style={{color:"rgba(0,0,0,0.2)"}}>发布后 7 天预估数据</span>
+              <span className="text-[9px]" style={{color:"#CDCDCD"}}>中位数 / 区间</span>
             </div>
-            <div className="grid grid-cols-3" style={{borderColor:BORDER}}>
+            <div className="grid grid-cols-3" style={{borderColor:"#EDE8E3"}}>
               {[
                 {label:"浏览量",emoji:"👁",d:pm.views,  color:ACCENT},
                 {label:"点赞量",emoji:"👍",d:pm.likes,  color:"#93c5fd"},
                 {label:"收藏量",emoji:"⭐",d:pm.saves,  color:"#fcd34d"},
               ].map(({label,emoji,d,color},i)=>(
                 <div key={label} className="px-3 py-3 text-center" style={{borderLeft:i>0?`1px solid ${BORDER}`:"none"}}>
-                  <div className="text-[9px] font-black tracking-wide mb-1.5" style={{color:"rgba(255,255,255,0.25)"}}>{emoji} {label}</div>
+                  <div className="text-[9px] font-black tracking-wide mb-1.5" style={{color:"rgba(0,0,0,0.15)"}}>{emoji} {label}</div>
                   <div className="text-lg font-black" style={{color}}>{fmtN(d?.median)}</div>
                   <div className="text-[9px] mt-0.5 font-bold" style={{color:"rgba(255,255,255,0.2)"}}>
                     {fmtN(d?.min)} – {fmtN(d?.max)}
@@ -508,7 +508,7 @@ const ScorePanel=({result,loading,error,onScore,hasKey,onApply,onSaveScore,score
         {/* AI-rewritten content */}
         {(result.improved_title||result.improved_cover)&&(
           <div className="space-y-2">
-            <div className="text-[9px] font-black tracking-widest" style={{color:"#444"}}>AI 改写建议（可一键应用）</div>
+            <div className="text-[9px] font-black tracking-widest" style={{color:"#BCBCBC"}}>AI 改写建议（可一键应用）</div>
             {result.improved_title&&(
               <div className="rounded-xl p-3" style={{backgroundColor:"rgba(200,255,0,0.05)",border:"1px solid rgba(200,255,0,0.15)"}}>
                 <div className="text-[9px] font-black tracking-wide mb-2" style={{color:"rgba(200,255,0,0.5)"}}>✦ 改写标题</div>
@@ -516,7 +516,7 @@ const ScorePanel=({result,loading,error,onScore,hasKey,onApply,onSaveScore,score
                 {onApply&&(
                   <button onClick={()=>onApply({type:"title",label:"标题",value:result.improved_title})}
                     className="rounded-full px-3 py-1 text-[10px] font-black transition hover:brightness-110"
-                    style={{backgroundColor:ACCENT,color:"black"}}>✓ 应用标题</button>
+                    style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>✓ 应用标题</button>
                 )}
               </div>
             )}
@@ -527,7 +527,7 @@ const ScorePanel=({result,loading,error,onScore,hasKey,onApply,onSaveScore,score
                 {onApply&&(
                   <button onClick={()=>onApply({type:"cover",label:"封面",value:result.improved_cover})}
                     className="rounded-full px-3 py-1 text-[10px] font-black transition hover:brightness-110"
-                    style={{backgroundColor:ACCENT,color:"black"}}>✓ 应用封面</button>
+                    style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>✓ 应用封面</button>
                 )}
               </div>
             )}
@@ -541,21 +541,21 @@ const ScorePanel=({result,loading,error,onScore,hasKey,onApply,onSaveScore,score
           </div>
         )}
         {/* Disclaimer */}
-        <div className="rounded-xl px-4 py-3 text-[10px] leading-relaxed" style={{backgroundColor:"rgba(255,255,255,0.025)",color:"rgba(255,255,255,0.25)"}}>
+        <div className="rounded-xl px-4 py-3 text-[10px] leading-relaxed" style={{backgroundColor:"rgba(255,255,255,0.025)",color:"rgba(0,0,0,0.15)"}}>
           📌 这是概率工具，不是预言机。85分也可能扑街，55分也可能爆款。评分的真正价值是"投入哪20%的时间能换80%的提升"——重点看最弱维度和Top 3建议。
         </div>
         {/* Top 3 suggestions */}
         {result.top_3_suggestions?.length>0&&(
           <div className="space-y-2">
-            <div className="text-[9px] font-black tracking-widest" style={{color:"#444"}}>TOP 3 优化建议</div>
+            <div className="text-[9px] font-black tracking-widest" style={{color:"#BCBCBC"}}>TOP 3 优化建议</div>
             {result.top_3_suggestions.map((s,i)=>(
-              <div key={i} className="rounded-xl p-3" style={{backgroundColor:"rgba(255,255,255,0.03)",border:`1px solid ${BORDER}`}}>
+              <div key={i} className="rounded-xl p-3" style={{backgroundColor:"rgba(0,0,0,0.02)",border:`1px solid ${BORDER}`}}>
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="h-4 w-4 rounded-full text-[9px] font-black flex items-center justify-center shrink-0" style={{backgroundColor:ACCENT,color:"black"}}>{i+1}</span>
+                  <span className="h-4 w-4 rounded-full text-[9px] font-black flex items-center justify-center shrink-0" style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>{i+1}</span>
                   <span className="text-[10px] font-black" style={{color:ACCENT}}>{s.dimension}</span>
                   {s.expected_lift&&<span className="text-[9px] font-bold ml-auto" style={{color:"rgba(200,255,0,0.5)"}}>预计 +{s.expected_lift}</span>}
                 </div>
-                <div className="text-[10px] pl-6 mb-0.5" style={{color:"#555"}}>现状：{s.current}</div>
+                <div className="text-[10px] pl-6 mb-0.5" style={{color:"#ABABAB"}}>现状：{s.current}</div>
                 <div className="text-[11px] font-bold pl-6" style={{color:"rgba(255,255,255,0.75)"}}>{s.suggestion}</div>
               </div>
             ))}
@@ -1615,7 +1615,7 @@ ${draft.body||"（未填写）"}
 - 极简高级感，暗色调为主（背景可用渐变或深色纯色）
 - 主标题文字要大且有视觉冲击力（font-size 120-180）
 - 可使用几何图形、线条等装饰元素
-- 固定包含：主标题（来自用户内容）、作者署名 @Shreya（右下角，accent色 #C8FF00）
+- 固定包含：主标题（来自用户内容）、作者署名 @Shreya（右下角，accent色 #7DD3B4）
 - 必须用 \`\`\`svg ... \`\`\` 包裹输出，不要其他解释`;
 
   /* 设计 prompt 工程：把用户输入 + 对话历史 + 参考图描述 → 生成超丰富的图像 prompt */
@@ -1633,7 +1633,7 @@ DESIGN REQUIREMENTS:
 - Sophisticated color palette: warm muted tones OR moody dark with one accent color
 - Negative space, balanced composition, editorial feel
 - Texture/grain/film aesthetic if appropriate
-- Small "@Shreya" signature in bottom-right corner in neon yellow-green (#C8FF00)
+- Small "@Shreya" signature in bottom-right corner in neon yellow-green (#7DD3B4)
 - Tiny "30+ 人生草稿" label top-left in subtle gray
 - NO watermarks, NO logos, NO stock-photo look
 - Style references: Kinfolk magazine, Aesop branding, MUJI minimalism, Japanese 杂志 design
@@ -1666,13 +1666,10 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
     }
     setCoverRefImg(null);
 
-    // Try image models in best-quality order. Imagen-4 uses :predict, others use :generateContent.
+    // Try image models in best-quality order (2025-2026 verified model names).
     const imageModels=[
-      "nano-banana-pro-preview",           // best quality (2026 promotional name)
-      "gemini-3-pro-image-preview",
-      "gemini-3.1-flash-image-preview",
-      "gemini-2.5-flash-image",
-      "gemini-2.5-flash-image-preview",    // legacy
+      "gemini-2.0-flash-exp",              // experimental, supports image generation
+      "gemini-2.0-flash",                  // stable, may support image output
     ];
     let data,res,lastErr;
     for(const model of imageModels){
@@ -1701,14 +1698,14 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
     // If all Gemini image models failed (quota:0 = free tier), use Pollinations.ai via direct img URL (bypasses CORS).
     if(!res?.ok){
       console.warn("[xhs] All Gemini image models failed. Using Pollinations.ai direct URL");
-      // Build English prompt for better Flux results
-      const englishPrompt=`Xiaohongshu social media cover image, vertical 3:4 ratio, kinfolk magazine aesthetic. Main Chinese text: "${coverMainText}" rendered in large bold typography. ${descText?descText:"warm muted color palette, editorial layout, negative space"}. Premium minimal design.`;
+      // Build English prompt for better Flux results (keep it short to avoid URL length issues)
+      const englishPrompt=`Xiaohongshu cover, vertical 3:4, minimal editorial design. Bold Chinese text: "${coverMainText}". ${descText?descText.slice(0,80):"warm muted colors, negative space"}. Magazine aesthetic.`;
       const seed=Math.floor(Math.random()*99999);
-      const pollUrl=`https://image.pollinations.ai/prompt/${encodeURIComponent(englishPrompt)}?width=810&height=1080&model=flux&nologo=true&seed=${seed}`;
+      const pollUrl=`https://image.pollinations.ai/prompt/${encodeURIComponent(englishPrompt)}?width=810&height=1080&nologo=true&seed=${seed}`;
       // Use URL directly — browser <img> bypasses CORS. Pollinations generates on first GET.
       setCoverMsgs(p=>[...p.filter(m=>!m.isGenerating),{
         role:"assistant",
-        content:`✦ 封面图生成中（Pollinations.ai · Flux 免费模型，需 10-30 秒）\n\n💡 你的 Gemini 图像 API 没开通付费层级（limit: 0），降级用了免费方案。\n要使用 Nano Banana 高质量出图：https://aistudio.google.com/billing 升级 Paid Tier。`,
+        content:`✦ 封面图生成中（Pollinations.ai 免费模型，需 10-30 秒加载）\n\n💡 Gemini 图像生成未开通或模型不可用，降级到免费方案。\n如需高质量出图，前往 https://aistudio.google.com/billing 升级付费层级。`,
         imageUrl:pollUrl,
         externalUrl:true, // flag: imageUrl is an external URL, not base64 data URL
       }]);
@@ -1766,8 +1763,7 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
   };
 
   /* ── Pattern Report: AI regenerate from live reviewNotes ── */
-  const analyzePatternsAI=async(retryCount=0)=>{
-    const MAX_RETRIES=1; // total 2 attempts (initial + 1 retry)
+  const analyzePatternsAI=async()=>{
     if(!activeKey){setPatternError("⚠ 请先在「AI对话」面板配置 API Key");return;}
     if(reviewNotes.length===0){setPatternError("⚠ 暂无已发布笔记，无法分析");return;}
     setPatternLoading(true);setPatternError("");
@@ -1850,21 +1846,17 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
       }
       showToast(`✓ 规律报告已生成 · 基于 ${reviewNotes.length} 篇`,"success");
     }catch(err){
-      // Auto-retry on rate-limit (429 / quota exceeded) — max 1 retry, wait capped at 30s
+      // Auto-retry on rate-limit (429 / quota exceeded)
       const msg=err.message||"";
       const retryMatch=msg.match(/retry in (\d+(?:\.\d+)?)s/);
       const isRateLimit=msg.includes("quota")||msg.includes("rate limit")||msg.includes("429");
-      if(isRateLimit&&retryMatch&&retryCount<MAX_RETRIES){
-        const waitSec=Math.min(Math.ceil(parseFloat(retryMatch[1]))+1,30);
-        setPatternError(`⏳ 触发限速（${retryCount+1}/${MAX_RETRIES+1}），${waitSec} 秒后自动重试…`);
+      if(isRateLimit&&retryMatch){
+        const waitSec=Math.ceil(parseFloat(retryMatch[1]))+1;
+        setPatternError(`⏳ 触发限速，${waitSec} 秒后自动重试…`);
         await new Promise(r=>setTimeout(r,waitSec*1000));
-        return analyzePatternsAI(retryCount+1);
+        return analyzePatternsAI(); // retry recursively (once)
       }
-      if(isRateLimit){
-        setPatternError(`⚠ AI 限速持续触发，请稍后手动重试（${msg.slice(0,80)}）`);
-      } else {
-        setPatternError(`⚠ AI 分析失败：${msg}`);
-      }
+      setPatternError(`⚠ AI 分析失败：${msg}`);
       showToast(`⚠ AI 分析失败：${msg.slice(0,60)}`,"error");
     }finally{setPatternLoading(false);}
   };
@@ -2181,19 +2173,19 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
       <div className="min-h-screen text-white flex" style={{backgroundColor:BG,fontFamily:"'DM Sans','Noto Sans SC',sans-serif"}}>
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet"/>
         {/* Left: simplified desktop with just header + toggle */}
-        <div className="flex-1 flex flex-col items-center justify-center p-8" style={{backgroundColor:"#0a0a0a"}}>
+        <div className="flex-1 flex flex-col items-center justify-center p-8" style={{backgroundColor:"#FBF8F4"}}>
           <div className="max-w-md text-center">
             <div className="text-5xl font-black mb-3" style={{color:ACCENT}}>📱</div>
             <div className="text-sm font-black mb-2 text-white">移动端预览模式</div>
-            <div className="text-[12px] mb-6" style={{color:"#666"}}>
+            <div className="text-[12px] mb-6" style={{color:"#9B9B9B"}}>
               右侧是真实 393×852 viewport 渲染（iframe 加载），所有响应式断点正常触发，可以直接交互。
             </div>
             <button onClick={()=>setMobilePreview(false)}
               className="px-6 py-3 rounded-2xl text-sm font-black transition hover:brightness-110"
-              style={{backgroundColor:ACCENT,color:"black"}}>
+              style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>
               💻 返回桌面端
             </button>
-            <div className="text-[10px] mt-6" style={{color:"#444"}}>
+            <div className="text-[10px] mt-6" style={{color:"#BCBCBC"}}>
               💡 iframe 与桌面端共享 localStorage / IndexedDB，数据相通。<br/>
               修改后另一端需刷新才能看到。
             </div>
@@ -2206,11 +2198,11 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
             borderRadius:"55px",
             border:"14px solid #1a1a1a",
             backgroundColor:BG,
-            boxShadow:"0 30px 80px rgba(0,0,0,0.6), 0 0 0 2px #2a2a2a, inset 0 0 0 1px #333",
+            boxShadow:"0 12px 40px rgba(0,0,0,0.08), 0 0 0 2px #2a2a2a, inset 0 0 0 1px #333",
             overflow:"hidden",
           }}>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center" style={{width:"120px",height:"34px",backgroundColor:"#000",borderRadius:"0 0 22px 22px"}}>
-              <div className="w-3 h-3 rounded-full" style={{backgroundColor:"#1a1a1a"}}/>
+              <div className="w-3 h-3 rounded-full" style={{backgroundColor:"#F8F5F1"}}/>
             </div>
             <iframe src="/?embedded=1" title="移动端预览"
               style={{width:"100%",height:"100%",border:"none",borderRadius:"40px",backgroundColor:BG}}/>
@@ -2227,10 +2219,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
       <header className="sticky top-0 z-40 backdrop-blur-xl" style={{backgroundColor:`${BG}ee`,borderBottom:`1px solid ${BORDER}`,paddingTop:"env(safe-area-inset-top)"}}>
         <div className="max-w-5xl mx-auto px-3 sm:px-4 h-12 sm:h-14 flex items-center justify-between gap-1">
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-black text-[10px]" style={{backgroundColor:ACCENT,color:"black"}}>XHS</div>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-black text-[10px]" style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>XHS</div>
             <div className="hidden sm:block">
               <span className="text-white font-black text-sm tracking-tight">小红书运营</span>
-              <span className="font-black text-xs ml-2 uppercase tracking-widest" style={{color:"#444"}}>Dashboard</span>
+              <span className="font-black text-xs ml-2 uppercase tracking-widest" style={{color:"#BCBCBC"}}>Dashboard</span>
             </div>
             {/* Mobile: show current tab name instead of all tabs */}
             <span className="sm:hidden text-white font-black text-xs">{NAV.find(n=>n.id===tab)?.label}</span>
@@ -2247,7 +2239,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
           </nav>
           <div className="flex items-center gap-1 shrink-0">
             {user&&(
-              <div className="hidden sm:flex items-center gap-2 mr-2 px-2 py-1 rounded-lg text-[10px]" style={{backgroundColor:"rgba(255,255,255,0.04)",border:`1px solid ${BORDER}`,color:"#888"}}>
+              <div className="hidden sm:flex items-center gap-2 mr-2 px-2 py-1 rounded-lg text-[10px]" style={{backgroundColor:"rgba(0,0,0,0.03)",border:`1px solid ${BORDER}`,color:"#9B9B9B"}}>
                 <span style={{color:ACCENT}}>●</span>
                 <span className="font-bold max-w-[140px] truncate">{user.email}</span>
               </div>
@@ -2256,14 +2248,14 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
               <button onClick={()=>{if(confirm("退出登录？"))onLogout();}}
                 title={user?`已登录 ${user.email} · 点击退出`:"退出登录"}
                 className="hidden sm:flex h-8 px-2 rounded-xl items-center justify-center text-[10px] font-black transition-all hover:brightness-110"
-                style={{backgroundColor:"rgba(255,255,255,0.06)",border:`1px solid ${BORDER}`,color:"#888"}}>
+                style={{backgroundColor:"rgba(0,0,0,0.04)",border:`1px solid ${BORDER}`,color:"#9B9B9B"}}>
                 退出
               </button>
             )}
             <button onClick={()=>{addTopic();}}
               title="快速新建笔记"
               className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl flex items-center justify-center text-base sm:text-lg font-black transition-all hover:brightness-110"
-              style={{backgroundColor:ACCENT,color:"black"}}>＋</button>
+              style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>＋</button>
             <button onClick={async()=>{
               if(!confirm("⚠ 重置所有数据为初始种子？\n\n这会清除你账号下所有云端笔记、评论模板、AI 报告 + 本地图片缓存，恢复到示例数据状态。此操作不可撤销。"))return;
               try{
@@ -2293,7 +2285,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
               <button onClick={()=>setMobilePreview(v=>!v)}
                 title={mobilePreview?"退出移动端预览":"打开移动端预览（iframe 加载 393px viewport，响应式真实生效）"}
                 className="hidden sm:flex h-8 px-2 rounded-xl items-center justify-center text-[10px] font-black transition-all hover:brightness-110"
-                style={{backgroundColor:mobilePreview?ACCENT:"rgba(255,255,255,0.06)",color:mobilePreview?"black":"#888",border:`1px solid ${mobilePreview?ACCENT:BORDER}`}}>
+                style={{backgroundColor:mobilePreview?ACCENT:"rgba(0,0,0,0.04)",color:mobilePreview?"black":"#888",border:`1px solid ${mobilePreview?ACCENT:BORDER}`}}>
                 {mobilePreview?"💻 退出":"📱 移动预览"}
               </button>
             )}
@@ -2330,7 +2322,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
         <div className="mb-2">
           <div className="flex items-end gap-4">
             <h1 className="text-4xl sm:text-6xl font-black text-white leading-none tracking-tight">{NAV.find(n=>n.id===tab)?.en}</h1>
-            <span className="font-black text-lg mb-1" style={{color:"#333"}}>{NAV.find(n=>n.id===tab)?.label}</span>
+            <span className="font-black text-lg mb-1" style={{color:"#CDCDCD"}}>{NAV.find(n=>n.id===tab)?.label}</span>
           </div>
           <div className="w-12 h-1 rounded-full mt-3" style={{backgroundColor:ACCENT}}/>
         </div>
@@ -2346,15 +2338,15 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
             </div>
             <div className="rounded-2xl p-4" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-black" style={{color:"#888"}}>本周发布目标</span>
+                <span className="text-xs font-black" style={{color:"#9B9B9B"}}>本周发布目标</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px]" style={{color:"#555"}}>目标</span>
+                  <span className="text-[10px]" style={{color:"#ABABAB"}}>目标</span>
                   <input type="number" min={1} value={weeklyTarget} onChange={e=>setWeeklyTarget(Math.max(1,+e.target.value||1))}
                     className="w-14 rounded-lg px-2 py-1 text-xs text-white text-center outline-none"
-                    style={{backgroundColor:"#1a1a1a",border:"1px solid #2a2a2a"}}/>
+                    style={{backgroundColor:"#F8F5F1",border:"1px solid #EDE8E3"}}/>
                 </div>
               </div>
-              <div className="h-2 rounded-full overflow-hidden" style={{backgroundColor:"#1a1a1a"}}>
+              <div className="h-2 rounded-full overflow-hidden" style={{backgroundColor:"#F8F5F1"}}>
                 <div className="h-full rounded-full transition-all duration-500" style={{width:`${progress}%`,backgroundColor:ACCENT}}/>
               </div>
             </div>
@@ -2364,7 +2356,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
             </div>
             {/* Status filter row */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[10px] font-black tracking-widest" style={{color:"#444"}}>状态</span>
+              <span className="text-[10px] font-black tracking-widest" style={{color:"#BCBCBC"}}>状态</span>
               <Pill active={statusFilter==="全部"} onClick={()=>setStatusFilter("全部")}>全部</Pill>
               {STATUSES.map(s=>(
                 <Pill key={s} active={statusFilter===s} onClick={()=>setStatusFilter(s)}>{s}</Pill>
@@ -2376,14 +2368,14 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                 style={{backgroundColor:"rgba(200,255,0,0.06)",border:`1px solid rgba(200,255,0,0.2)`}}>
                 <div className="flex items-center gap-2 text-[11px] flex-wrap">
                   <span className="font-black" style={{color:ACCENT}}>🔍 筛选中</span>
-                  <span style={{color:"#888"}}>显示 <span className="font-black" style={{color:"white"}}>{filtered.length}</span> / {topics.length} 条</span>
+                  <span style={{color:"#9B9B9B"}}>显示 <span className="font-black" style={{color:"#3D3D3D"}}>{filtered.length}</span> / {topics.length} 条</span>
                   {pillarFilter!=="全部"&&<Badge style={{backgroundColor:"rgba(200,255,0,0.15)",color:ACCENT}}>支柱：{pillarFilter}</Badge>}
                   {statusFilter!=="全部"&&<Badge style={{backgroundColor:"rgba(200,255,0,0.15)",color:ACCENT}}>状态：{statusFilter}</Badge>}
                   {search.trim()&&<Badge style={{backgroundColor:"rgba(200,255,0,0.15)",color:ACCENT}}>搜索："{search.trim()}"</Badge>}
                 </div>
                 <button onClick={()=>{setPillarFilter("全部");setStatusFilter("全部");setSearch("");}}
                   className="text-[10px] font-black px-2.5 py-1 rounded-lg transition hover:brightness-110"
-                  style={{backgroundColor:ACCENT,color:"black"}}>✕ 清空筛选</button>
+                  style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>✕ 清空筛选</button>
               </div>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -2393,27 +2385,27 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   onClick={()=>openEditor(t)}>
                   <div className="flex items-start gap-3">
                     {/* Thumbnail */}
-                    <div className="shrink-0 rounded-lg overflow-hidden relative" style={{width:"44px",height:"58px",backgroundColor:"#1a1a1a",border:`1px solid ${BORDER}`}}>
+                    <div className="shrink-0 rounded-lg overflow-hidden relative" style={{width:"44px",height:"58px",backgroundColor:"#F8F5F1",border:`1px solid ${BORDER}`}}>
                       {t.images?.[0]?(
                         <img src={t.images[0].dataUrl} alt="" className="w-full h-full object-cover"/>
                       ):t.noteType==="image"&&t.status==="已发布"?(
-                        <div className="w-full h-full flex flex-col items-center justify-center" style={{color:"#444"}}>
+                        <div className="w-full h-full flex flex-col items-center justify-center" style={{color:"#BCBCBC"}}>
                           <div className="text-sm">📷</div>
                           <div className="text-[7px] mt-0.5 font-black" style={{color:"#fcd34d"}}>缺图</div>
                         </div>
                       ):(
-                        <div className="w-full h-full flex items-center justify-center text-sm" style={{color:"#333"}}>{t.noteType==="video"?"🎬":"📝"}</div>
+                        <div className="w-full h-full flex items-center justify-center text-sm" style={{color:"#CDCDCD"}}>{t.noteType==="video"?"🎬":"📝"}</div>
                       )}
                       {t.images?.length>1&&(
                         <div className="absolute bottom-0.5 right-0.5 px-1 rounded text-[8px] font-black"
-                          style={{backgroundColor:"rgba(0,0,0,0.7)",color:"white"}}>×{t.images.length}</div>
+                          style={{backgroundColor:"rgba(0,0,0,0.7)",color:"#3D3D3D"}}>×{t.images.length}</div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-bold text-white truncate group-hover:text-lime-400 transition">{t.title}</h3>
                       <div className="flex flex-wrap gap-1.5 mt-2">
-                        <Badge style={{backgroundColor:"#1e1e1e",color:"#888"}}>{t.pillar}</Badge>
-                        <Badge style={{backgroundColor:"#1e1e1e",color:"#888"}}>{t.goal}</Badge>
+                        <Badge style={{backgroundColor:"#F5F0EB",color:"#9B9B9B"}}>{t.pillar}</Badge>
+                        <Badge style={{backgroundColor:"#F5F0EB",color:"#9B9B9B"}}>{t.goal}</Badge>
                         {t.scoreDetail?(
                           <button onClick={e=>{e.stopPropagation();setScoreDetailView(t);}}
                             title={`查看完整 AI 评分明细 · 评于 ${new Date(t.scoredAt).toLocaleString("zh-CN")}`}
@@ -2447,11 +2439,11 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                         backgroundRepeat:"no-repeat",
                         backgroundPosition:"right 6px center",
                       }}>
-                      {STATUSES.map(s=><option key={s} value={s} style={{backgroundColor:"#1a1a1a",color:"white"}}>{s}</option>)}
+                      {STATUSES.map(s=><option key={s} value={s} style={{backgroundColor:"#F8F5F1",color:"#3D3D3D"}}>{s}</option>)}
                     </select>
                   </div>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="text-[10px]" style={{color:"#444"}}>{t.tag}</span>
+                    <span className="text-[10px]" style={{color:"#BCBCBC"}}>{t.tag}</span>
                     <button onClick={e=>{e.stopPropagation();if(confirm(`确认删除「${t.title.slice(0,15)}${t.title.length>15?"…":""}」？\n\n该笔记会从 Board / Calendar / Review 同步消失，包括所有图片和快照。此操作不可撤销。`)){deleteTopic(t.id);showToast("✓ 笔记已删除","success");}}}
                       className="text-[10px] px-2 py-1 rounded-md hover:brightness-110 transition" style={{color:"#fca5a5",backgroundColor:"rgba(127,29,29,0.2)"}}>✕ 删除</button>
                   </div>
@@ -2478,7 +2470,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   <span className="text-[10px] font-black" style={{color:draftDirty?"#f59e0b":ACCENT}}>
                     {!selected?(draftHasContent?"● 新灵感未保存":"💡 灵感速记"):(draftDirty?"● 未保存":"✓ 已保存")}
                   </span>
-                  <span className="text-[10px] truncate" style={{color:"#666"}}>
+                  <span className="text-[10px] truncate" style={{color:"#9B9B9B"}}>
                     {selected?(selected.title||"未命名笔记"):"输入内容后点保存创建新笔记"}
                   </span>
                 </div>
@@ -2493,13 +2485,13 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     }}
                       title="清空，开始记新灵感"
                       className="text-[10px] font-black px-2 py-1.5 rounded-lg transition hover:brightness-110"
-                      style={{backgroundColor:"rgba(255,255,255,0.06)",color:"#888",border:`1px solid ${BORDER}`}}>
+                      style={{backgroundColor:"rgba(0,0,0,0.04)",color:"#9B9B9B",border:`1px solid ${BORDER}`}}>
                       💡 新建
                     </button>
                   )}
                   <button onClick={saveDraftToTopic} disabled={!draftDirty}
                     className="text-[11px] font-black px-3 py-1.5 rounded-lg transition disabled:opacity-40 hover:brightness-110"
-                    style={{backgroundColor:draftDirty?ACCENT:"rgba(255,255,255,0.06)",color:draftDirty?"black":"#555"}}>
+                    style={{backgroundColor:draftDirty?ACCENT:"rgba(0,0,0,0.04)",color:draftDirty?"black":"#555"}}>
                     {selected?"💾 保存到笔记":"＋ 创建新笔记"}
                   </button>
                 </div>
@@ -2513,10 +2505,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                 <span className="text-[10px] font-black truncate" style={{color:draftDirty?"#f59e0b":ACCENT}}>
                   {!selected?(draftHasContent?"● 新灵感未保存":"💡 灵感速记模式"):(draftDirty?"● 未保存的修改":"✓ 已保存")}
                 </span>
-                <span className="text-[9px] shrink-0" style={{color:"#666"}}>{draftDirty?"↓ 点底部保存":""}</span>
+                <span className="text-[9px] shrink-0" style={{color:"#9B9B9B"}}>{draftDirty?"↓ 点底部保存":""}</span>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black tracking-widest" style={{color:"#555"}}>标题</label>
+                <label className="text-[10px] font-black tracking-widest" style={{color:"#ABABAB"}}>标题</label>
                 <Input value={draft.title} onChange={e=>setDraft({...draft,title:e.target.value})} placeholder="输入标题..."/>
                 <div className="text-[10px]" style={{color:titleLen>=8&&titleLen<=18&&hasConflict(draft.title)?ACCENT:"#f59e0b"}}>
                   {titleLen}字 · 建议8-18字 + 冲突词
@@ -2524,18 +2516,18 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                 <Btn small onClick={()=>{setSuggestions(titleSuggestions(draft.title||selected?.title));setAiMsg("已生成冲突标题候选。");}}>生成冲突标题</Btn>
               </div>
               {suggestions.length>0&&(
-                <div className="rounded-2xl p-3 space-y-1.5" style={{backgroundColor:"#111",border:`1px solid ${BORDER}`}}>
-                  <div className="text-[10px] font-black mb-2" style={{color:"#555"}}>标题候选（点击替换）</div>
+                <div className="rounded-2xl p-3 space-y-1.5" style={{backgroundColor:"#FFFFFF",border:`1px solid ${BORDER}`}}>
+                  <div className="text-[10px] font-black mb-2" style={{color:"#ABABAB"}}>标题候选（点击替换）</div>
                   {suggestions.map(s=>(
                     <button key={s} onClick={()=>{setDraft({...draft,title:s,cover:generateCover(s)});setAiMsg("已替换标题。");}}
-                      className="block w-full text-left px-3 py-2 rounded-lg text-xs transition" style={{color:"#aaa"}}>{s}</button>
+                      className="block w-full text-left px-3 py-2 rounded-lg text-xs transition" style={{color:"#7A7A7A"}}>{s}</button>
                   ))}
                 </div>
               )}
               <div className="space-y-2">
-                <label className="text-[10px] font-black tracking-widest" style={{color:"#555"}}>正文</label>
+                <label className="text-[10px] font-black tracking-widest" style={{color:"#ABABAB"}}>正文</label>
                 <Textarea rows={10} value={draft.body} onChange={e=>setDraft({...draft,body:e.target.value})} placeholder="写正文..."/>
-                <div className="text-[10px]" style={{color:"#555"}}>{bodyLen}字 · 建议≤1000字</div>
+                <div className="text-[10px]" style={{color:"#ABABAB"}}>{bodyLen}字 · 建议≤1000字</div>
                 <div className="flex flex-wrap gap-1.5">
                   <Btn small onClick={()=>{setDraft({...draft,body:generateBody(draft.title)});setAiMsg("已生成正文草稿。");}}>生成草稿</Btn>
                   <Btn small onClick={()=>{setDraft({...draft,body:compressBody(draft.body)});setAiMsg("已压缩。");}}>压缩</Btn>
@@ -2544,7 +2536,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black tracking-widest" style={{color:"#555"}}>封面大字</label>
+                <label className="text-[10px] font-black tracking-widest" style={{color:"#ABABAB"}}>封面大字</label>
                 <Input value={draft.cover} onChange={e=>setDraft({...draft,cover:e.target.value})}/>
                 <Btn small onClick={()=>{setDraft({...draft,cover:generateCover(draft.title)});setAiMsg("已生成封面文案。");}}>AI封面文案</Btn>
               </div>
@@ -2553,7 +2545,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
             {/* ── RIGHT: tabs (check | chat) ── */}
             <div className="flex flex-col gap-3">
               {/* Tab switcher */}
-              <div className="grid grid-cols-4 rounded-2xl p-1 gap-0.5 sm:gap-1" style={{backgroundColor:"#111",border:`1px solid ${BORDER}`}}>
+              <div className="grid grid-cols-4 rounded-2xl p-1 gap-0.5 sm:gap-1" style={{backgroundColor:"#FFFFFF",border:`1px solid ${BORDER}`}}>
                 {[{id:"check",label:"📋 检查"},{id:"chat",label:"💬 对话"},{id:"cover",label:"🎨 封面"},{id:"score",label:"📊 评分"}].map(t=>(
                   <button key={t.id} onClick={()=>setEditorPanel(t.id)}
                     className="py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-[11px] font-black tracking-wide transition-all whitespace-nowrap"
@@ -2569,7 +2561,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   <div className="rounded-2xl p-5" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-xs font-black">发布前检查</span>
-                      <Badge style={allPass?{backgroundColor:ACCENT,color:"black"}:{backgroundColor:"rgba(127,29,29,0.4)",color:"#fca5a5"}}>
+                      <Badge style={allPass?{backgroundColor:ACCENT,color:"#FFFFFF"}:{backgroundColor:"rgba(127,29,29,0.4)",color:"#fca5a5"}}>
                         {allPass?"可发布":"未完成"}
                       </Badge>
                     </div>
@@ -2577,10 +2569,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   </div>
                   <div className="rounded-2xl overflow-hidden" style={{border:`1px solid ${BORDER}`}}>
                     <div className="px-3 py-2.5 flex items-center justify-between" style={{backgroundColor:CARD}}>
-                      <span className="text-[10px] font-black tracking-widest" style={{color:"#555"}}>封面预览</span>
+                      <span className="text-[10px] font-black tracking-widest" style={{color:"#ABABAB"}}>封面预览</span>
                       <button onClick={downloadCover}
                         className="flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black transition hover:brightness-110"
-                        style={{backgroundColor:ACCENT,color:"black"}}>↓ 下载{coverBgUrl&&coverBgUrl.startsWith("data:image/svg+xml")?" SVG":" PNG"}</button>
+                        style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>↓ 下载{coverBgUrl&&coverBgUrl.startsWith("data:image/svg+xml")?" SVG":" PNG"}</button>
                     </div>
                     <div className="relative flex flex-col justify-center overflow-hidden"
                       style={{background:"linear-gradient(135deg,#1a1520 0%,#201a28 50%,#1a1520 100%)",aspectRatio:"3/4"}}>
@@ -2590,7 +2582,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       ):(
                         /* Default text preview */
                         <div className="px-8 relative">
-                          <div className="absolute top-4 left-8 text-[10px] font-black" style={{color:"#444"}}>30+ 人生草稿</div>
+                          <div className="absolute top-4 left-8 text-[10px] font-black" style={{color:"#BCBCBC"}}>30+ 人生草稿</div>
                           <div className="text-3xl sm:text-4xl font-black leading-tight whitespace-pre-line mt-8" style={{color:"#f0ebe6"}}>{draft.cover||"封面大字"}</div>
                           <div className="absolute bottom-4 right-8 text-[10px] font-black" style={{color:ACCENT}}>@Shreya</div>
                         </div>
@@ -2620,7 +2612,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                               <img src={img.dataUrl} alt=""
                                 onClick={()=>setImgLightbox({images:selected.images,index:idx})}
                                 className="w-full h-full object-cover cursor-zoom-in"/>
-                              {idx===0&&<div className="absolute top-0.5 left-0.5 px-1 rounded text-[8px] font-black" style={{backgroundColor:ACCENT,color:"black"}}>封面</div>}
+                              {idx===0&&<div className="absolute top-0.5 left-0.5 px-1 rounded text-[8px] font-black" style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>封面</div>}
                               {/* Always-visible delete button (top-right) */}
                               <button onClick={(e)=>{e.stopPropagation();if(confirm(`确认删除第 ${idx+1} 张图片？`))removeNoteImage(selected.id,img.id);}}
                                 title="删除这张图片"
@@ -2630,10 +2622,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                                 style={{background:"linear-gradient(to top,rgba(0,0,0,0.85),transparent)"}}>
                                 <button onClick={(e)=>{e.stopPropagation();moveNoteImage(selected.id,img.id,"up");}} disabled={idx===0}
                                   className="flex-1 py-0.5 rounded text-[9px] font-black transition disabled:opacity-30"
-                                  style={{backgroundColor:"rgba(255,255,255,0.15)",color:"white"}}>↑</button>
+                                  style={{backgroundColor:"rgba(255,255,255,0.15)",color:"#3D3D3D"}}>↑</button>
                                 <button onClick={(e)=>{e.stopPropagation();moveNoteImage(selected.id,img.id,"down");}} disabled={idx===selected.images.length-1}
                                   className="flex-1 py-0.5 rounded text-[9px] font-black transition disabled:opacity-30"
-                                  style={{backgroundColor:"rgba(255,255,255,0.15)",color:"white"}}>↓</button>
+                                  style={{backgroundColor:"rgba(255,255,255,0.15)",color:"#3D3D3D"}}>↓</button>
                                 <button onClick={(e)=>{e.stopPropagation();if(confirm("删除？"))removeNoteImage(selected.id,img.id);}}
                                   className="flex-1 py-0.5 rounded text-[9px] font-black transition"
                                   style={{backgroundColor:"rgba(127,29,29,0.6)",color:"#fca5a5"}}>✕</button>
@@ -2658,7 +2650,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   )}
                   {selected&&(
                     <div className="rounded-2xl p-4" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
-                      <div className="text-[10px] font-black mb-2" style={{color:"#555"}}>更新状态</div>
+                      <div className="text-[10px] font-black mb-2" style={{color:"#ABABAB"}}>更新状态</div>
                       <div className="flex flex-wrap gap-1.5">
                         {STATUSES.map(s=>(
                           <Btn key={s} small accent={selected.status===s}
@@ -2685,10 +2677,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     <div className="flex flex-col items-center justify-center flex-1 p-6 gap-4">
                       <div className="text-center">
                         <div className="text-2xl font-black text-white mb-1">接入 AI</div>
-                        <div className="text-[11px]" style={{color:"#555"}}>选择模型，输入 API Key 开始对话</div>
+                        <div className="text-[11px]" style={{color:"#ABABAB"}}>选择模型，输入 API Key 开始对话</div>
                       </div>
                       {/* Provider selector */}
-                      <div className="flex w-full rounded-xl p-1 gap-1" style={{backgroundColor:"#1a1a1a"}}>
+                      <div className="flex w-full rounded-xl p-1 gap-1" style={{backgroundColor:"#F8F5F1"}}>
                         {[{id:"claude",label:"Claude",sub:"Anthropic"},{id:"openai",label:"ChatGPT",sub:"OpenAI"},{id:"gemini",label:"Gemini",sub:"Google"}].map(p=>(
                           <button key={p.id} onClick={()=>setSetupProvider(p.id)}
                             className="flex-1 py-2.5 rounded-lg text-[11px] font-black transition-all"
@@ -2705,20 +2697,20 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                           onChange={e=>setKeyDraft(e.target.value)}
                           onKeyDown={e=>e.key==="Enter"&&saveKey()}
                           className="w-full rounded-xl px-4 py-3 text-sm outline-none font-mono"
-                          style={{backgroundColor:"#1a1a1a",border:`1px solid ${BORDER}`,color:"white"}}/>
+                          style={{backgroundColor:"#F8F5F1",border:`1px solid ${BORDER}`,color:"#3D3D3D"}}/>
                         <button onClick={saveKey}
                           className="w-full py-3 rounded-xl text-sm font-black transition"
-                          style={{backgroundColor:ACCENT,color:"black"}}>
+                          style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>
                           保存 &amp; 开始对话
                         </button>
                         {/* Quick-switch to already-saved providers */}
                         <div className="flex gap-2">
-                          {setupProvider!=="claude"&&claudeKey&&<button onClick={()=>switchProvider("claude")} className="flex-1 py-2 rounded-xl text-[10px] font-black transition" style={{backgroundColor:"rgba(255,255,255,0.04)",color:"#555"}}>用 Claude Key →</button>}
-                          {setupProvider!=="openai"&&openaiKey&&<button onClick={()=>switchProvider("openai")} className="flex-1 py-2 rounded-xl text-[10px] font-black transition" style={{backgroundColor:"rgba(255,255,255,0.04)",color:"#555"}}>用 GPT Key →</button>}
-                          {setupProvider!=="gemini"&&geminiKey&&<button onClick={()=>switchProvider("gemini")} className="flex-1 py-2 rounded-xl text-[10px] font-black transition" style={{backgroundColor:"rgba(255,255,255,0.04)",color:"#555"}}>用 Gemini Key →</button>}
+                          {setupProvider!=="claude"&&claudeKey&&<button onClick={()=>switchProvider("claude")} className="flex-1 py-2 rounded-xl text-[10px] font-black transition" style={{backgroundColor:"rgba(0,0,0,0.03)",color:"#ABABAB"}}>用 Claude Key →</button>}
+                          {setupProvider!=="openai"&&openaiKey&&<button onClick={()=>switchProvider("openai")} className="flex-1 py-2 rounded-xl text-[10px] font-black transition" style={{backgroundColor:"rgba(0,0,0,0.03)",color:"#ABABAB"}}>用 GPT Key →</button>}
+                          {setupProvider!=="gemini"&&geminiKey&&<button onClick={()=>switchProvider("gemini")} className="flex-1 py-2 rounded-xl text-[10px] font-black transition" style={{backgroundColor:"rgba(0,0,0,0.03)",color:"#ABABAB"}}>用 Gemini Key →</button>}
                         </div>
                       </div>
-                      <div className="text-[10px] text-center" style={{color:"#333"}}>Key 仅存储在本地 localStorage，不会上传</div>
+                      <div className="text-[10px] text-center" style={{color:"#CDCDCD"}}>Key 仅存储在本地 localStorage，不会上传</div>
                     </div>
                   ):(
                     <>
@@ -2731,23 +2723,23 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                               onClick={()=>p.has?switchProvider(p.id):setSetupProvider(p.id)}
                               className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black transition"
                               style={{
-                                backgroundColor:aiProvider===p.id?ACCENT:"rgba(255,255,255,0.06)",
-                                color:aiProvider===p.id?"black":p.has?"rgba(255,255,255,0.5)":"#333",
+                                backgroundColor:aiProvider===p.id?ACCENT:"rgba(0,0,0,0.04)",
+                                color:aiProvider===p.id?"black":p.has?"rgba(0,0,0,0.4)":"#333",
                                 outline:!p.has?"1px dashed #333":"none",
                               }}>
-                              <span className="h-1.5 w-1.5 rounded-full" style={{backgroundColor:aiProvider===p.id?"black":p.has?"#C8FF00":"#444"}}/>
+                              <span className="h-1.5 w-1.5 rounded-full" style={{backgroundColor:aiProvider===p.id?"black":p.has?"#7DD3B4":"#444"}}/>
                               {p.has?p.label:`+ ${p.id==="claude"?"Claude":p.id==="openai"?"GPT":"Gemini"}`}
                             </button>
                           ))}
-                          <span className="text-[9px] ml-1" style={{color:"#333"}}>草稿已同步</span>
+                          <span className="text-[9px] ml-1" style={{color:"#CDCDCD"}}>草稿已同步</span>
                         </div>
                         <div className="flex items-center gap-2">
                           {chatMsgs.length>0&&(
                             <button onClick={()=>setChatMsgs([])}
-                              className="text-[10px] font-black transition hover:opacity-70" style={{color:"#444"}}>清空</button>
+                              className="text-[10px] font-black transition hover:opacity-70" style={{color:"#BCBCBC"}}>清空</button>
                           )}
                           <button onClick={()=>clearKey(aiProvider)}
-                            className="text-[10px] font-black transition hover:text-red-400" style={{color:"#333"}}>删除Key</button>
+                            className="text-[10px] font-black transition hover:text-red-400" style={{color:"#CDCDCD"}}>删除Key</button>
                         </div>
                       </div>
 
@@ -2755,11 +2747,11 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{maxHeight:"380px"}}>
                         {chatMsgs.length===0&&(
                           <div className="space-y-2 pt-2">
-                            <div className="text-[11px] font-black" style={{color:"#444"}}>你好！我已经看到你的草稿了，可以直接跟我说：</div>
+                            <div className="text-[11px] font-black" style={{color:"#BCBCBC"}}>你好！我已经看到你的草稿了，可以直接跟我说：</div>
                             {["帮我把标题改得更有冲突感","正文太长了，帮我压缩到500字以内","封面文案太平，帮我改得更有力量感","分析一下这篇笔记哪里还可以提升"].map(q=>(
                               <button key={q} onClick={()=>{setChatInput(q);}}
                                 className="block w-full text-left px-3 py-2.5 rounded-xl text-[11px] font-bold transition"
-                                style={{backgroundColor:"rgba(255,255,255,0.04)",border:`1px solid ${BORDER}`,color:"rgba(255,255,255,0.5)"}}>
+                                style={{backgroundColor:"rgba(0,0,0,0.03)",border:`1px solid ${BORDER}`,color:"rgba(0,0,0,0.4)"}}>
                                 {q}
                               </button>
                             ))}
@@ -2777,7 +2769,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                               {(displayText||blocks.length===0)&&(
                                 <div className="max-w-[85%] rounded-2xl px-4 py-3 text-[12px] leading-relaxed whitespace-pre-wrap"
                                   style={{
-                                    backgroundColor:isSys?"rgba(200,255,0,0.08)":isUser?"rgba(200,255,0,0.18)":"rgba(255,255,255,0.06)",
+                                    backgroundColor:isSys?"rgba(200,255,0,0.08)":isUser?"rgba(200,255,0,0.18)":"rgba(0,0,0,0.04)",
                                     color:isSys?ACCENT:isUser?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.82)",
                                     borderRadius:isUser?"18px 18px 4px 18px":"18px 18px 18px 4px",
                                   }}>
@@ -2796,7 +2788,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                                         </span>
                                         <button onClick={()=>applyBlock(block)}
                                           className="flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black transition hover:brightness-110 shrink-0"
-                                          style={{backgroundColor:ACCENT,color:"black"}}>
+                                          style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>
                                           ✓ 应用
                                         </button>
                                       </div>
@@ -2812,7 +2804,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                         })}
                         {chatLoading&&(
                           <div className="flex items-start">
-                            <div className="rounded-2xl px-4 py-3 text-[13px]" style={{backgroundColor:"rgba(255,255,255,0.06)",color:"#555",borderRadius:"18px 18px 18px 4px"}}>
+                            <div className="rounded-2xl px-4 py-3 text-[13px]" style={{backgroundColor:"rgba(0,0,0,0.04)",color:"#ABABAB",borderRadius:"18px 18px 18px 4px"}}>
                               <span className="inline-flex gap-1">
                                 <span className="animate-bounce" style={{animationDelay:"0ms"}}>·</span>
                                 <span className="animate-bounce" style={{animationDelay:"120ms"}}>·</span>
@@ -2839,14 +2831,14 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                             onChange={e=>setChatInput(e.target.value)}
                             onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendAiChat();}}}
                             className="flex-1 rounded-xl px-3 py-2 text-xs outline-none resize-none"
-                            style={{backgroundColor:"#1a1a1a",border:`1px solid ${BORDER}`,color:"white",lineHeight:"1.5"}}/>
+                            style={{backgroundColor:"#F8F5F1",border:`1px solid ${BORDER}`,color:"#3D3D3D",lineHeight:"1.5"}}/>
                           <button onClick={sendAiChat} disabled={chatLoading||!chatInput.trim()}
                             className="rounded-xl px-4 font-black text-[11px] transition disabled:opacity-30"
-                            style={{backgroundColor:ACCENT,color:"black",minWidth:"52px"}}>
+                            style={{backgroundColor:ACCENT,color:"#FFFFFF",minWidth:"52px"}}>
                             {chatLoading?"…":"发送"}
                           </button>
                         </div>
-                        <div className="mt-1.5 text-[9px]" style={{color:"#333"}}>Enter 发送 · Shift+Enter 换行 · 草稿修改后自动同步给 AI</div>
+                        <div className="mt-1.5 text-[9px]" style={{color:"#CDCDCD"}}>Enter 发送 · Shift+Enter 换行 · 草稿修改后自动同步给 AI</div>
                       </div>
                     </>
                   )}
@@ -2877,7 +2869,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-black text-white">🎨 封面设计 AI</span>
-                        <span className="text-[9px] font-bold" style={{color:"#555"}}>上传参考图 · 生成封面 · 迭代调整</span>
+                        <span className="text-[9px] font-bold" style={{color:"#ABABAB"}}>上传参考图 · 生成封面 · 迭代调整</span>
                       </div>
                       {(draft.title||draft.body)&&(
                         <div className="text-[10px] mt-1 truncate" style={{color:ACCENT}}>
@@ -2898,14 +2890,14 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       <div className="flex flex-col items-center justify-center h-full py-8 text-center gap-3">
                         <div className="text-3xl">🎨</div>
                         <div className="text-sm font-black text-white">AI 封面设计助手</div>
-                        <div className="text-[11px] leading-relaxed max-w-[220px]" style={{color:"#555"}}>
+                        <div className="text-[11px] leading-relaxed max-w-[220px]" style={{color:"#ABABAB"}}>
                           描述封面风格、上传参考图，或直接点「生成封面图」
                         </div>
                         <div className="grid grid-cols-1 gap-1.5 w-full mt-1">
                           {["帮我设计一个暗色调、大字冲击感的封面","我想要类似杂志封面的风格","参考我上传的图，帮我设计同风格"].map(s=>(
                             <button key={s} onClick={()=>setCoverInput(s)}
                               className="text-left px-3 py-2 rounded-xl text-[11px] font-bold transition hover:opacity-80"
-                              style={{backgroundColor:"rgba(255,255,255,0.04)",border:`1px solid ${BORDER}`,color:"rgba(255,255,255,0.5)"}}>
+                              style={{backgroundColor:"rgba(0,0,0,0.03)",border:`1px solid ${BORDER}`,color:"rgba(0,0,0,0.4)"}}>
                               {s}
                             </button>
                           ))}
@@ -2921,16 +2913,16 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                         <div className={`max-w-[85%] space-y-2 ${m.role==="user"?"items-end":""} flex flex-col`}>
                           {/* Reference image thumbnail */}
                           {m.refImage&&(
-                            <div className="rounded-xl overflow-hidden border" style={{borderColor:BORDER,maxWidth:"120px"}}>
+                            <div className="rounded-xl overflow-hidden border" style={{borderColor:"#EDE8E3",maxWidth:"120px"}}>
                               <img src={m.refImage.preview} alt="参考图" className="w-full object-cover"/>
-                              <div className="px-2 py-1 text-[9px] font-bold" style={{backgroundColor:"#111",color:"#555"}}>参考图</div>
+                              <div className="px-2 py-1 text-[9px] font-bold" style={{backgroundColor:"#FFFFFF",color:"#ABABAB"}}>参考图</div>
                             </div>
                           )}
                           {/* Text content */}
                           {m.content&&(
                             <div className="px-3 py-2.5 rounded-2xl text-[12px] leading-relaxed whitespace-pre-wrap"
                               style={{
-                                backgroundColor:m.role==="user"?"rgba(200,255,0,0.12)":"rgba(255,255,255,0.04)",
+                                backgroundColor:m.role==="user"?"rgba(200,255,0,0.12)":"rgba(0,0,0,0.03)",
                                 color:m.role==="user"?ACCENT:"rgba(255,255,255,0.8)",
                                 border:`1px solid ${m.role==="user"?"rgba(200,255,0,0.2)":BORDER}`,
                                 fontStyle:m.isGenerating?"italic":"normal",
@@ -2949,22 +2941,22 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                                   if(selected)setNoteCover(selected.id,svgDataUrl);else setCoverBgUrl(svgDataUrl);
                                 }}
                                   className="flex-1 py-1.5 rounded-xl text-[11px] font-black transition hover:brightness-110"
-                                  style={{backgroundColor:ACCENT,color:"black"}}>✓ 设为封面背景</button>
+                                  style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>✓ 设为封面背景</button>
                                 <button onClick={()=>{
                                   const blob=new Blob([m.svgCode],{type:"image/svg+xml"});
                                   const url=URL.createObjectURL(blob);
                                   const a=document.createElement("a");a.href=url;a.download="cover.svg";a.click();URL.revokeObjectURL(url);
                                 }}
                                   className="px-3 py-1.5 rounded-xl text-[11px] font-black transition hover:opacity-70"
-                                  style={{backgroundColor:"rgba(255,255,255,0.06)",color:"#888"}}>↓ SVG</button>
+                                  style={{backgroundColor:"rgba(0,0,0,0.04)",color:"#9B9B9B"}}>↓ SVG</button>
                               </div>
                             </div>
                           )}
                           {/* Generated raster image (Gemini or Pollinations) */}
                           {m.imageUrl&&(
-                            <div className="rounded-2xl overflow-hidden relative" style={{border:`1px solid ${ACCENT}44`,minHeight:"200px",backgroundColor:"#0a0a0a"}}>
+                            <div className="rounded-2xl overflow-hidden relative" style={{border:`1px solid ${ACCENT}44`,minHeight:"200px",backgroundColor:"#FBF8F4"}}>
                               {/* Loading placeholder (visible until img loads or errors) */}
-                              <div className="absolute inset-0 flex items-center justify-center text-[11px] z-0" style={{color:"#555"}}>
+                              <div className="absolute inset-0 flex items-center justify-center text-[11px] z-0" style={{color:"#ABABAB"}}>
                                 {m.externalUrl?"⏳ 外部图床生成中（10-60秒）…":"加载中…"}
                               </div>
                               <img src={m.imageUrl} alt="AI生成封面"
@@ -2976,19 +2968,19 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                               <div className="img-err absolute inset-0 z-20 p-4 flex flex-col items-center justify-center text-center" style={{display:"none",backgroundColor:"rgba(127,29,29,0.2)"}}>
                                 <div className="text-2xl mb-2">😵</div>
                                 <div className="text-[11px] font-black mb-2" style={{color:"#fca5a5"}}>图片加载失败</div>
-                                <div className="text-[10px] mb-3" style={{color:"#888"}}>外部图床（Pollinations）可能被你的网络拦截</div>
+                                <div className="text-[10px] mb-3" style={{color:"#9B9B9B"}}>外部图床（Pollinations）可能被你的网络拦截</div>
                                 <a href={m.imageUrl} target="_blank" rel="noreferrer"
                                   className="text-[10px] underline" style={{color:ACCENT}}>直接在浏览器打开图片 ↗</a>
                               </div>
                               <div className="px-3 py-2 flex gap-2 relative z-10" style={{backgroundColor:"rgba(200,255,0,0.06)"}}>
                                 <button onClick={()=>{if(selected)setNoteCover(selected.id,m.imageUrl);else setCoverBgUrl(m.imageUrl);}}
                                   className="flex-1 py-1.5 rounded-xl text-[11px] font-black transition hover:brightness-110"
-                                  style={{backgroundColor:ACCENT,color:"black"}}>✓ 设为封面背景</button>
+                                  style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>✓ 设为封面背景</button>
                                 <button onClick={()=>{
                                   const a=document.createElement("a");a.href=m.imageUrl;a.download=`cover-${Date.now()}.png`;a.target="_blank";a.click();
                                 }}
                                   className="px-3 py-1.5 rounded-xl text-[11px] font-black transition hover:opacity-70"
-                                  style={{backgroundColor:"rgba(255,255,255,0.06)",color:"#888"}}>↓ PNG</button>
+                                  style={{backgroundColor:"rgba(0,0,0,0.04)",color:"#9B9B9B"}}>↓ PNG</button>
                               </div>
                             </div>
                           )}
@@ -2999,9 +2991,9 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       <div className="flex gap-2">
                         <div className="h-6 w-6 rounded-full flex-shrink-0 flex items-center justify-center text-[11px]"
                           style={{backgroundColor:"rgba(200,255,0,0.12)",color:ACCENT}}>✦</div>
-                        <div className="flex items-center gap-1 px-3 py-2 rounded-2xl" style={{backgroundColor:"rgba(255,255,255,0.04)",border:`1px solid ${BORDER}`}}>
-                          {[0,120,240].map(d=><span key={d} className="text-sm animate-bounce" style={{animationDelay:`${d}ms`,color:"#444"}}>·</span>)}
-                          <span className="text-[10px] ml-1" style={{color:"#555"}}>{genImgLoading?"生成中…":"思考中…"}</span>
+                        <div className="flex items-center gap-1 px-3 py-2 rounded-2xl" style={{backgroundColor:"rgba(0,0,0,0.03)",border:`1px solid ${BORDER}`}}>
+                          {[0,120,240].map(d=><span key={d} className="text-sm animate-bounce" style={{animationDelay:`${d}ms`,color:"#BCBCBC"}}>·</span>)}
+                          <span className="text-[10px] ml-1" style={{color:"#ABABAB"}}>{genImgLoading?"生成中…":"思考中…"}</span>
                         </div>
                       </div>
                     )}
@@ -3014,9 +3006,9 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       <img src={coverRefImg.preview} alt="" className="h-10 w-10 rounded-lg object-cover"/>
                       <div className="flex-1 min-w-0">
                         <div className="text-[10px] font-black text-white truncate">{coverRefImg.name}</div>
-                        <div className="text-[9px]" style={{color:"#555"}}>参考图已附加，发送时一并上传</div>
+                        <div className="text-[9px]" style={{color:"#ABABAB"}}>参考图已附加，发送时一并上传</div>
                       </div>
-                      <button onClick={()=>setCoverRefImg(null)} className="text-[10px]" style={{color:"#444"}}>✕</button>
+                      <button onClick={()=>setCoverRefImg(null)} className="text-[10px]" style={{color:"#BCBCBC"}}>✕</button>
                     </div>
                   )}
 
@@ -3027,14 +3019,14 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendCoverMsg();}}}
                       placeholder="描述封面风格、颜色、内容方向… (Enter发送)"
                       className="w-full rounded-xl px-3 py-2 text-sm outline-none resize-none leading-relaxed"
-                      style={{backgroundColor:"rgba(255,255,255,0.04)",border:`1px solid ${BORDER}`,color:"white"}}/>
+                      style={{backgroundColor:"rgba(0,0,0,0.03)",border:`1px solid ${BORDER}`,color:"#3D3D3D"}}/>
                     <div className="flex gap-2">
                       {/* Upload reference image */}
                       <input type="file" ref={coverFileRef} accept="image/*" onChange={handleCoverFile} className="hidden"/>
                       <button onClick={()=>coverFileRef.current?.click()}
                         title="上传参考图"
                         className="h-9 w-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base transition hover:opacity-80"
-                        style={{backgroundColor:"rgba(255,255,255,0.06)",border:`1px solid ${BORDER}`,color:"#888"}}>📎</button>
+                        style={{backgroundColor:"rgba(0,0,0,0.04)",border:`1px solid ${BORDER}`,color:"#9B9B9B"}}>📎</button>
                       {/* Generate cover image */}
                       <button onClick={generateCoverImg} disabled={genImgLoading||coverLoading}
                         className="flex-1 py-2 rounded-xl text-[11px] font-black transition disabled:opacity-40"
@@ -3044,7 +3036,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       {/* Send chat */}
                       <button onClick={sendCoverMsg} disabled={coverLoading||(!coverInput.trim()&&!coverRefImg)}
                         className="h-9 w-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base transition disabled:opacity-40 hover:brightness-110"
-                        style={{backgroundColor:ACCENT,color:"black"}}>↑</button>
+                        style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>↑</button>
                     </div>
                   </div>
                 </div>
@@ -3119,24 +3111,24 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
               <div className="rounded-2xl p-3 space-y-2.5" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
                 {/* Type filter */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[9px] font-black tracking-widest shrink-0" style={{color:"#555"}}>内容支柱</span>
+                  <span className="text-[9px] font-black tracking-widest shrink-0" style={{color:"#ABABAB"}}>内容支柱</span>
                   {Object.keys(CAL_TYPE_GROUPS).map(t=>(
                     <button key={t} onClick={()=>setCalTypeFilter(t)}
                       className="px-2.5 py-1 rounded-full text-[10px] font-black transition-all"
                       style={{
-                        backgroundColor:calTypeFilter===t?ACCENT:"rgba(255,255,255,0.06)",
+                        backgroundColor:calTypeFilter===t?ACCENT:"rgba(0,0,0,0.04)",
                         color:calTypeFilter===t?"black":"rgba(255,255,255,0.45)",
                       }}>{t}</button>
                   ))}
                 </div>
                 {/* Status filter */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[9px] font-black tracking-widest shrink-0" style={{color:"#555"}}>状态</span>
+                  <span className="text-[9px] font-black tracking-widest shrink-0" style={{color:"#ABABAB"}}>状态</span>
                   {["全部","草稿","待写","待发布","已发布"].map(s=>(
                     <button key={s} onClick={()=>setCalStatusFilter(s)}
                       className="px-2.5 py-1 rounded-full text-[10px] font-black transition-all"
                       style={{
-                        backgroundColor:calStatusFilter===s?(STATUS_DOT[s]||ACCENT):"rgba(255,255,255,0.06)",
+                        backgroundColor:calStatusFilter===s?(STATUS_DOT[s]||ACCENT):"rgba(0,0,0,0.04)",
                         color:calStatusFilter===s?(s==="已发布"?"black":"black"):"rgba(255,255,255,0.45)",
                       }}>{s}</button>
                   ))}
@@ -3167,7 +3159,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       {MONTH_NAMES[calMonth]}
                     </div>
                     <div className="text-[13px] font-black mt-1.5 tracking-widest"
-                      style={{color:"rgba(255,255,255,0.3)"}}>
+                      style={{color:"rgba(0,0,0,0.2)"}}>
                       {calYear} · {String(calMonth+1).padStart(2,"0")}
                     </div>
                   </div>
@@ -3176,12 +3168,12 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       onDragOver={handleDragOverPrev}
                       onDragLeave={handleDragLeaveNav}
                       className="h-9 w-9 rounded-full flex items-center justify-center text-base font-black transition hover:brightness-125"
-                      style={{backgroundColor:draggingNote?"rgba(200,255,0,0.15)":"rgba(255,255,255,0.06)",color:draggingNote?ACCENT:"rgba(255,255,255,0.5)"}}>‹</button>
+                      style={{backgroundColor:draggingNote?"rgba(200,255,0,0.15)":"rgba(0,0,0,0.04)",color:draggingNote?ACCENT:"rgba(0,0,0,0.4)"}}>‹</button>
                     <button onClick={nextMonth}
                       onDragOver={handleDragOverNext}
                       onDragLeave={handleDragLeaveNav}
                       className="h-9 w-9 rounded-full flex items-center justify-center text-base font-black transition hover:brightness-125"
-                      style={{backgroundColor:draggingNote?"rgba(200,255,0,0.15)":"rgba(255,255,255,0.06)",color:draggingNote?ACCENT:"rgba(255,255,255,0.5)"}}>›</button>
+                      style={{backgroundColor:draggingNote?"rgba(200,255,0,0.15)":"rgba(0,0,0,0.04)",color:draggingNote?ACCENT:"rgba(0,0,0,0.4)"}}>›</button>
                   </div>
                 </div>
 
@@ -3222,7 +3214,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                 const GROUP_SUB={"全部":"","人生设计":"人生重铸 · 奥德赛","生活实验":"身体重铸 · 北漂","探索区":"副业 · AI工具"};
                 return(
                   <div className="rounded-2xl px-5 py-4" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
-                    <div className="text-[9px] font-black tracking-widest mb-3" style={{color:"rgba(255,255,255,0.25)"}}>内容支柱</div>
+                    <div className="text-[9px] font-black tracking-widest mb-3" style={{color:"rgba(0,0,0,0.15)"}}>内容支柱</div>
                     <div className="flex flex-wrap gap-2">
                       {Object.keys(CAL_TYPE_GROUPS).map(g=>{
                         const color=GROUP_COLOR[g]||ACCENT;
@@ -3231,13 +3223,13 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                           <button key={g} onClick={()=>setCalTypeFilter(g)}
                             className="flex items-center gap-2 rounded-xl px-3 py-2 transition-all"
                             style={{
-                              backgroundColor:active?`${color}22`:"rgba(255,255,255,0.03)",
+                              backgroundColor:active?`${color}22`:"rgba(0,0,0,0.02)",
                               border:`1px solid ${active?color+"55":BORDER}`,
                             }}>
                             <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{backgroundColor:color}}/>
                             <div className="text-left">
                               <div className="text-[11px] font-black" style={{color:active?color:"rgba(255,255,255,0.6)"}}>{g}</div>
-                              {GROUP_SUB[g]&&<div className="text-[9px]" style={{color:"rgba(255,255,255,0.25)"}}>{GROUP_SUB[g]}</div>}
+                              {GROUP_SUB[g]&&<div className="text-[9px]" style={{color:"rgba(0,0,0,0.15)"}}>{GROUP_SUB[g]}</div>}
                             </div>
                           </button>
                         );
@@ -3257,7 +3249,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     {calStatusFilter!=="全部"&&(
                       <button onClick={()=>setCalStatusFilter("全部")}
                         className="text-[9px] font-black px-2 py-0.5 rounded-full transition hover:opacity-70"
-                        style={{backgroundColor:"rgba(255,255,255,0.06)",color:"#555"}}>✕ 清除</button>
+                        style={{backgroundColor:"rgba(0,0,0,0.04)",color:"#ABABAB"}}>✕ 清除</button>
                     )}
                   </div>
                   <span className="text-[11px] font-black" style={{color:ACCENT}}>{totalMonth} 篇</span>
@@ -3280,7 +3272,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                           draggable
                           onClick={()=>setCalDetailNote(note)}
                           onDragStart={e=>{e.dataTransfer.setData("noteId",note.id);setDraggingNote(note);}}
-                          onMouseEnter={e=>e.currentTarget.style.backgroundColor="rgba(255,255,255,0.03)"}
+                          onMouseEnter={e=>e.currentTarget.style.backgroundColor="rgba(0,0,0,0.02)"}
                           onMouseLeave={e=>e.currentTarget.style.backgroundColor="transparent"}>
                           {/* Date badge */}
                           <div className="shrink-0 w-10 text-center">
@@ -3325,12 +3317,12 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
         {tab==="comments"&&(
           <div className="space-y-4">
             <div className="rounded-2xl p-5 space-y-3" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
-              <span className="text-[10px] font-black tracking-widest" style={{color:"#555"}}>新增话术</span>
+              <span className="text-[10px] font-black tracking-widest" style={{color:"#ABABAB"}}>新增话术</span>
               <Input placeholder="场景（如：求模板、好勇敢）" value={newComment.scene} onChange={e=>setNewComment({...newComment,scene:e.target.value})}/>
               <Textarea rows={2} placeholder="回复话术" value={newComment.reply} onChange={e=>setNewComment({...newComment,reply:e.target.value})}/>
               <div className="flex items-center gap-2">
                 <select value={newComment.tag} onChange={e=>setNewComment({...newComment,tag:e.target.value})}
-                  className="rounded-lg px-3 py-2 text-xs outline-none" style={{backgroundColor:"#1a1a1a",border:"1px solid #2a2a2a",color:"#aaa"}}>
+                  className="rounded-lg px-3 py-2 text-xs outline-none" style={{backgroundColor:"#F8F5F1",border:"1px solid #EDE8E3",color:"#7A7A7A"}}>
                   {["引流","人设","转化","互动"].map(t=><option key={t}>{t}</option>)}
                 </select>
                 <Btn accent small onClick={addCommentTemplate}>添加</Btn>
@@ -3350,7 +3342,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       <select value={editingComment.tag}
                         onChange={e=>setEditingComment({...editingComment,tag:e.target.value})}
                         className="rounded-lg px-3 py-2 text-xs outline-none flex-1"
-                        style={{backgroundColor:"#1a1a1a",border:"1px solid #2a2a2a",color:"#aaa"}}>
+                        style={{backgroundColor:"#F8F5F1",border:"1px solid #EDE8E3",color:"#7A7A7A"}}>
                         {["引流","人设","转化","互动"].map(t=><option key={t}>{t}</option>)}
                       </select>
                       <Btn accent small onClick={saveEditComment}>保存</Btn>
@@ -3361,16 +3353,16 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                 return(
                   <div key={c.id} className="rounded-2xl p-4" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
                     <div className="flex items-center justify-between mb-2">
-                      <Badge style={{backgroundColor:"#1e1e1e",color:"#888"}}>{c.tag}</Badge>
+                      <Badge style={{backgroundColor:"#F5F0EB",color:"#9B9B9B"}}>{c.tag}</Badge>
                       <div className="flex items-center gap-3">
                         <button onClick={()=>setEditingComment({...c})}
-                          className="text-[10px] font-black hover:opacity-70 transition" style={{color:"#555"}}>编辑</button>
+                          className="text-[10px] font-black hover:opacity-70 transition" style={{color:"#ABABAB"}}>编辑</button>
                         <button onClick={()=>deleteComment(c.id)}
-                          className="text-[10px] hover:text-red-400 transition" style={{color:"#333"}}>✕</button>
+                          className="text-[10px] hover:text-red-400 transition" style={{color:"#CDCDCD"}}>✕</button>
                       </div>
                     </div>
                     <div className="text-xs font-bold text-white mb-1">「{c.scene}」</div>
-                    <p className="text-xs leading-relaxed" style={{color:"#888"}}>{c.reply}</p>
+                    <p className="text-xs leading-relaxed" style={{color:"#9B9B9B"}}>{c.reply}</p>
                     <button className="mt-2 text-[10px] font-black hover:opacity-70 transition" style={{color:ACCENT}}
                       onClick={()=>navigator.clipboard?.writeText(c.reply)}>复制话术</button>
                   </div>
@@ -3389,16 +3381,16 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                 {/* Account Profile Bar — LIVE COMPUTED from reviewNotes */}
                 <div className="rounded-2xl p-4" style={{backgroundColor:"#0f0f0f",border:`1px solid ${BORDER}`}}>
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-[9px] font-black tracking-widest" style={{color:"#444"}}>
+                    <div className="text-[9px] font-black tracking-widest" style={{color:"#BCBCBC"}}>
                       账号画像 · 实时计算
                       <span className="ml-2 px-1.5 py-0.5 rounded" style={{backgroundColor:"rgba(200,255,0,0.1)",color:ACCENT}}>LIVE</span>
                     </div>
-                    <div className="text-[9px]" style={{color:"#444"}}>
+                    <div className="text-[9px]" style={{color:"#BCBCBC"}}>
                       样本：{accountProfile.sampleSize} 篇含快照 / {accountProfile.totalNotes} 篇已发布
                     </div>
                   </div>
                   {accountProfile.sampleSize===0?(
-                    <div className="text-center py-6 text-[11px]" style={{color:"#555"}}>
+                    <div className="text-center py-6 text-[11px]" style={{color:"#ABABAB"}}>
                       暂无已发布笔记数据快照，录入数据后会自动计算账号画像
                     </div>
                   ):(
@@ -3412,14 +3404,14 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                           {label:"累计新粉",value:accountProfile.totalFollowers.toLocaleString(),sub:"全部快照"},
                         ].map(item=>(
                           <div key={item.label} className="text-center p-3 rounded-xl" style={{backgroundColor:CARD}}>
-                            <div className="text-[9px] font-black tracking-wide mb-1" style={{color:"#555"}}>{item.label}</div>
+                            <div className="text-[9px] font-black tracking-wide mb-1" style={{color:"#ABABAB"}}>{item.label}</div>
                             <div className="text-xl font-black text-white">{item.value}</div>
-                            <div className="text-[9px]" style={{color:"#444"}}>{item.sub}</div>
+                            <div className="text-[9px]" style={{color:"#BCBCBC"}}>{item.sub}</div>
                           </div>
                         ))}
                       </div>
                       <div className="mt-3 flex items-center gap-2 flex-wrap">
-                        <span className="text-[9px] font-black" style={{color:"#444"}}>
+                        <span className="text-[9px] font-black" style={{color:"#BCBCBC"}}>
                           {accountProfile.bestPostTimes.length>0?"最佳发布时段（爆款/优质来源）：":"最佳发布时段：暂无足够爆款样本"}
                         </span>
                         {accountProfile.bestPostTimes.map(t=>(
@@ -3436,7 +3428,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   <Btn onClick={()=>{setReviewModal("new-note");setPredStep(0);}}>✏ 新建笔记</Btn>
                   <Btn onClick={()=>setReviewView("pattern")}>📈 规律报告</Btn>
                   <div className="flex-1"/>
-                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px]" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`,color:"#666"}}>
+                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px]" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`,color:"#9B9B9B"}}>
                     <span style={{color:"#f59e0b"}}>⏰</span>
                     <span>{reviewNotes.filter(n=>n.status==="已发布"&&n.snapshots.length<3).length} 篇待快照</span>
                   </div>
@@ -3447,20 +3439,20 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   <div className="rounded-2xl p-4" style={{backgroundColor:"rgba(120,53,15,0.15)",border:"1px solid rgba(251,146,60,0.2)"}}>
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-[10px] font-black" style={{color:"#fb923c"}}>⏳ 待发布预测</span>
-                      <span className="text-[9px]" style={{color:"#555"}}>发布后在小红书录入数据快照，状态自动更新为已发布</span>
+                      <span className="text-[9px]" style={{color:"#ABABAB"}}>发布后在小红书录入数据快照，状态自动更新为已发布</span>
                     </div>
                     <div className="space-y-2">
                       {reviewNotes.filter(n=>n.status==="预测中").map(note=>(
                         <div key={note.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl"
-                          style={{backgroundColor:"rgba(255,255,255,0.04)",border:`1px solid ${BORDER}`}}>
+                          style={{backgroundColor:"rgba(0,0,0,0.03)",border:`1px solid ${BORDER}`}}>
                           <div className="flex-1 min-w-0">
                             <div className="text-xs font-bold text-white truncate">{note.title}</div>
-                            <div className="text-[9px] mt-0.5" style={{color:"#555"}}>{note.pillar} · 发布时间：{note.publishTime?.slice(0,10)||"未设置"}</div>
+                            <div className="text-[9px] mt-0.5" style={{color:"#ABABAB"}}>{note.pillar} · 发布时间：{note.publishTime?.slice(0,10)||"未设置"}</div>
                           </div>
                           <button onClick={()=>{
                             setTopics(prev=>prev.map(n=>n.id===note.id?{...n,status:"已发布"}:n));
                           }} className="ml-3 shrink-0 text-[10px] font-black px-3 py-1.5 rounded-lg transition hover:brightness-110"
-                            style={{backgroundColor:ACCENT,color:"black"}}>已发布 ✓</button>
+                            style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>已发布 ✓</button>
                         </div>
                       ))}
                     </div>
@@ -3485,13 +3477,13 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   if(rows.length===0)return(
                     <div className="text-center py-12 rounded-2xl" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
                       <div className="text-3xl mb-2">📭</div>
-                      <div className="text-[11px] font-black" style={{color:"#555"}}>暂无已发布笔记快照</div>
-                      <div className="text-[10px] mt-1" style={{color:"#444"}}>点击「📷 截图录入」开始</div>
+                      <div className="text-[11px] font-black" style={{color:"#ABABAB"}}>暂无已发布笔记快照</div>
+                      <div className="text-[10px] mt-1" style={{color:"#BCBCBC"}}>点击「📷 截图录入」开始</div>
                     </div>
                   );
                   return(
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between text-[10px]" style={{color:"#555"}}>
+                      <div className="flex items-center justify-between text-[10px]" style={{color:"#ABABAB"}}>
                         <span><span className="font-black" style={{color:ACCENT}}>{rows.length}</span> 条数据快照 · 来自 <span className="font-black" style={{color:ACCENT}}>{new Set(rows.map(r=>r.note.id)).size}</span> 篇笔记</span>
                         <span>排序：笔记 + 快照阶段（1h → 24h → 72h）</span>
                       </div>
@@ -3515,34 +3507,34 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                               {/* Header: show full title only for first row of each note */}
                               {isFirstOfNote?(
                                 <div className="flex gap-3 mb-3">
-                                  <div className="shrink-0 rounded-lg overflow-hidden relative" style={{width:"48px",height:"64px",backgroundColor:"#1a1a1a",border:`1px solid ${BORDER}`}}>
+                                  <div className="shrink-0 rounded-lg overflow-hidden relative" style={{width:"48px",height:"64px",backgroundColor:"#F8F5F1",border:`1px solid ${BORDER}`}}>
                                     {note.images?.[0]?(
                                       <img src={note.images[0].dataUrl} alt="" className="w-full h-full object-cover"/>
                                     ):note.noteType==="image"?(
-                                      <div className="w-full h-full flex flex-col items-center justify-center" style={{color:"#444"}}>
+                                      <div className="w-full h-full flex flex-col items-center justify-center" style={{color:"#BCBCBC"}}>
                                         <div className="text-base">📷</div>
                                         <div className="text-[7px] mt-0.5 font-black" style={{color:"#fcd34d"}}>缺图</div>
                                       </div>
                                     ):(
-                                      <div className="w-full h-full flex items-center justify-center text-base" style={{color:"#444"}}>🎬</div>
+                                      <div className="w-full h-full flex items-center justify-center text-base" style={{color:"#BCBCBC"}}>🎬</div>
                                     )}
                                     {note.images?.length>1&&(
                                       <div className="absolute bottom-0.5 right-0.5 px-1 rounded text-[8px] font-black"
-                                        style={{backgroundColor:"rgba(0,0,0,0.7)",color:"white"}}>×{note.images.length}</div>
+                                        style={{backgroundColor:"rgba(0,0,0,0.7)",color:"#3D3D3D"}}>×{note.images.length}</div>
                                     )}
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
-                                      <Badge style={{backgroundColor:"#1e1e1e",color:"#666"}}>{note.pillar}</Badge>
-                                      <span className="text-[9px]" style={{color:"#444"}}>{note.snapshots?.length||0} 次快照</span>
-                                      <span className="text-[9px]" style={{color:"#444"}}>· 发布 {new Date(note.publishTime).toLocaleDateString("zh-CN")}</span>
+                                      <Badge style={{backgroundColor:"#F5F0EB",color:"#9B9B9B"}}>{note.pillar}</Badge>
+                                      <span className="text-[9px]" style={{color:"#BCBCBC"}}>{note.snapshots?.length||0} 次快照</span>
+                                      <span className="text-[9px]" style={{color:"#BCBCBC"}}>· 发布 {new Date(note.publishTime).toLocaleDateString("zh-CN")}</span>
                                     </div>
                                     <h3 className="text-sm font-bold text-white leading-snug group-hover:text-lime-400 transition">{note.title}</h3>
                                   </div>
                                 </div>
                               ):(
-                                <div className="flex items-center gap-2 mb-2 text-[10px]" style={{color:"#444"}}>
-                                  <span style={{color:"#333"}}>↳</span>
+                                <div className="flex items-center gap-2 mb-2 text-[10px]" style={{color:"#BCBCBC"}}>
+                                  <span style={{color:"#CDCDCD"}}>↳</span>
                                   <span className="truncate">{note.title}</span>
                                 </div>
                               )}
@@ -3553,7 +3545,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                                     <Badge style={{backgroundColor:"rgba(200,255,0,0.12)",color:ACCENT}}>📊 {snap.type} 快照</Badge>
                                     {tags.map(k=><StTag key={k} tagKey={k}/>)}
                                     {jStyle&&<Badge style={{backgroundColor:jStyle.bg,color:jStyle.color}}>{jStyle.label}</Badge>}
-                                    <span className="text-[9px] ml-auto" style={{color:"#444"}}>{snap.time?new Date(snap.time).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):""}</span>
+                                    <span className="text-[9px] ml-auto" style={{color:"#BCBCBC"}}>{snap.time?new Date(snap.time).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):""}</span>
                                     <button onClick={(e)=>{e.stopPropagation();if(confirm(`确认删除「${note.title.slice(0,15)}」的 ${snap.type} 快照？`))deleteSnapshot(note.id,snap.id);}}
                                       title="删除此快照"
                                       className="text-[10px] font-black px-1.5 py-0.5 rounded-md transition hover:brightness-110"
@@ -3561,23 +3553,23 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                                   </div>
                                   <div className="grid grid-cols-5 gap-1.5 sm:gap-2 mb-2">
                                     {[["浏览",snap.views],["点赞",snap.likes],["收藏",snap.collects],["评论",snap.comments],["涨粉",snap.newFollowers]].map(([l,v])=>(
-                                      <div key={l} className="text-center p-1.5 sm:p-2 rounded-lg overflow-hidden" style={{backgroundColor:"#111"}}>
+                                      <div key={l} className="text-center p-1.5 sm:p-2 rounded-lg overflow-hidden" style={{backgroundColor:"#FFFFFF"}}>
                                         <div className="text-[11px] sm:text-sm font-black text-white truncate">{fmtNum(v)}</div>
-                                        <div className="text-[9px]" style={{color:"#555"}}>{l}</div>
+                                        <div className="text-[9px]" style={{color:"#ABABAB"}}>{l}</div>
                                       </div>
                                     ))}
                                   </div>
                                   {snap.views>0&&(
-                                    <div className="flex gap-3 text-[10px]" style={{color:"#555"}}>
+                                    <div className="flex gap-3 text-[10px]" style={{color:"#ABABAB"}}>
                                       <span>赞阅 {fmtRate(snap.likes,snap.views)}%</span>
                                       <span>藏阅 {fmtRate(snap.collects,snap.views)}%</span>
                                       <span>评阅 {fmtRate(snap.comments,snap.views)}%</span>
                                     </div>
                                   )}
                                   {diag&&(
-                                    <div className="rounded-xl p-2.5 mt-3" style={{backgroundColor:"#0a0a0a",border:`1px solid ${BORDER}`}}>
+                                    <div className="rounded-xl p-2.5 mt-3" style={{backgroundColor:"#FBF8F4",border:`1px solid ${BORDER}`}}>
                                       <span className="text-[9px] font-black mr-2" style={{color:ACCENT}}>AI诊断</span>
-                                      <span className="text-[11px]" style={{color:"#888"}}>{diag.keyInsight}</span>
+                                      <span className="text-[11px]" style={{color:"#9B9B9B"}}>{diag.keyInsight}</span>
                                     </div>
                                   )}
                                 </>
@@ -3599,7 +3591,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
             {/* ── NOTE DETAIL VIEW ── */}
             {reviewView==="note-detail"&&selNote&&(
               <div className="space-y-5">
-                <button onClick={goBackToList} className="flex items-center gap-2 text-xs font-black transition" style={{color:"#555"}}>
+                <button onClick={goBackToList} className="flex items-center gap-2 text-xs font-black transition" style={{color:"#ABABAB"}}>
                   ← 返回列表
                 </button>
                 {/* Note header */}
@@ -3613,7 +3605,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       <Badge key={t} style={{backgroundColor:"rgba(200,255,0,0.08)",color:ACCENT}}>#{t}</Badge>
                     ))}
                   </div>
-                  <div className="flex gap-4 text-xs" style={{color:"#555"}}>
+                  <div className="flex gap-4 text-xs" style={{color:"#ABABAB"}}>
                     <span>📅 {new Date(selNote.publishTime).toLocaleString("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})}</span>
                     <span>🗂 {selNote.pillar}</span>
                     <span>📷 {selNote.noteType==="image"?"图文":"视频"}</span>
@@ -3633,7 +3625,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-black">📷 笔记图片</span>
-                        <span className="text-[10px]" style={{color:"#555"}}>
+                        <span className="text-[10px]" style={{color:"#ABABAB"}}>
                           {(selNote.images||[]).length===0?"暂无图片":`${selNote.images.length} 张 · 第1张为封面`}
                         </span>
                         {imgSaving&&<span className="text-[10px] font-black" style={{color:ACCENT}}>💾 保存中…</span>}
@@ -3659,10 +3651,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                               className="w-full h-full object-cover cursor-zoom-in"/>
                             {idx===0&&(
                               <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded-md text-[8px] font-black"
-                                style={{backgroundColor:ACCENT,color:"black"}}>封面</div>
+                                style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>封面</div>
                             )}
                             <div className="absolute top-1 right-8 text-[8px] font-black px-1.5 py-0.5 rounded-md"
-                              style={{backgroundColor:"rgba(0,0,0,0.6)",color:"white"}}>{idx+1}</div>
+                              style={{backgroundColor:"rgba(0,0,0,0.6)",color:"#3D3D3D"}}>{idx+1}</div>
                             {/* Always-visible delete button */}
                             <button onClick={(e)=>{e.stopPropagation();if(confirm(`确认删除第 ${idx+1} 张图片？`))removeNoteImage(selNote.id,img.id);}}
                               title="删除这张图片"
@@ -3673,11 +3665,11 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                               <button onClick={(e)=>{e.stopPropagation();moveNoteImage(selNote.id,img.id,"up");}}
                                 disabled={idx===0}
                                 className="flex-1 py-1 rounded-md text-[10px] font-black transition disabled:opacity-30"
-                                style={{backgroundColor:"rgba(255,255,255,0.15)",color:"white"}}>↑</button>
+                                style={{backgroundColor:"rgba(255,255,255,0.15)",color:"#3D3D3D"}}>↑</button>
                               <button onClick={(e)=>{e.stopPropagation();moveNoteImage(selNote.id,img.id,"down");}}
                                 disabled={idx===selNote.images.length-1}
                                 className="flex-1 py-1 rounded-md text-[10px] font-black transition disabled:opacity-30"
-                                style={{backgroundColor:"rgba(255,255,255,0.15)",color:"white"}}>↓</button>
+                                style={{backgroundColor:"rgba(255,255,255,0.15)",color:"#3D3D3D"}}>↓</button>
                               <button onClick={(e)=>{e.stopPropagation();if(confirm("删除这张图片？"))removeNoteImage(selNote.id,img.id);}}
                                 className="flex-1 py-1 rounded-md text-[10px] font-black transition"
                                 style={{backgroundColor:"rgba(127,29,29,0.6)",color:"#fca5a5"}}>✕</button>
@@ -3699,7 +3691,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                         <div className="text-[11px] font-black" style={{color:imgDragOver?ACCENT:"#888"}}>
                           {imgDragOver?"松开上传":"点击或拖拽图片到这里（最多 18 张）"}
                         </div>
-                        <div className="text-[10px] mt-1" style={{color:"#444"}}>第一张将作为封面</div>
+                        <div className="text-[10px] mt-1" style={{color:"#BCBCBC"}}>第一张将作为封面</div>
                       </div>
                     )}
                   </div>
@@ -3759,7 +3751,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       {/* Editable metrics grid */}
                       <div className="grid grid-cols-5 gap-1.5 sm:gap-2 mb-3">
                         {[["浏览","views"],["点赞","likes"],["收藏","collects"],["评论","comments"],["涨粉","newFollowers"]].map(([l,k])=>(
-                          <div key={k} className="text-center p-3 rounded-xl" style={{backgroundColor:"#111",border:`1px solid ${editingSnap?ACCENT+"44":BORDER}`}}>
+                          <div key={k} className="text-center p-3 rounded-xl" style={{backgroundColor:"#FFFFFF",border:`1px solid ${editingSnap?ACCENT+"44":BORDER}`}}>
                             {editingSnap?(
                               <input
                                 type="number" min="0"
@@ -3770,7 +3762,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                             ):(
                               <div className="text-xl font-black text-white">{fmtNum(selSnap[k])}</div>
                             )}
-                            <div className="text-[10px]" style={{color:"#555"}}>{l}</div>
+                            <div className="text-[10px]" style={{color:"#ABABAB"}}>{l}</div>
                           </div>
                         ))}
                       </div>
@@ -3787,11 +3779,11 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                         ):(
                           <button onClick={()=>{setEditingSnap(true);setSnapDraft({});}}
                             className="text-[10px] font-black px-3 py-1.5 rounded-lg transition hover:opacity-80"
-                            style={{backgroundColor:"rgba(255,255,255,0.05)",color:"#555"}}>✏ 手动修改数据</button>
+                            style={{backgroundColor:"rgba(0,0,0,0.03)",color:"#ABABAB"}}>✏ 手动修改数据</button>
                         )}
                       </div>
                       {selSnap.views>0&&(
-                        <div className="flex gap-4 text-xs mb-4" style={{color:"#555"}}>
+                        <div className="flex gap-4 text-xs mb-4" style={{color:"#ABABAB"}}>
                           <span>赞阅比 {fmtRate(selSnap.likes,selSnap.views)}%
                             {selNote.aiPrediction&&<span style={{color:+fmtRate(selSnap.likes,selSnap.views)>=selNote.aiPrediction.predictions.likeRate.median?"#86efac":"#fca5a5"}}>
                               {" "}(预期{selNote.aiPrediction.predictions.likeRate.median}%)
@@ -3804,7 +3796,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       {selSnap.aiDiagnosis?(
                         <Btn accent onClick={()=>openDiagnosis(selSnap)} className="w-full">查看 AI 诊断报告 →</Btn>
                       ):(
-                        <div className="text-center py-4 text-xs" style={{color:"#444"}}>该快照暂无 AI 诊断</div>
+                        <div className="text-center py-4 text-xs" style={{color:"#BCBCBC"}}>该快照暂无 AI 诊断</div>
                       )}
                     </div>
                   )}
@@ -3818,7 +3810,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
               const jStyle=JUDGMENT[diag.overallJudgment]||JUDGMENT.met;
               return(
                 <div className="space-y-5">
-                  <button onClick={goBackToNote} className="flex items-center gap-2 text-xs font-black transition" style={{color:"#555"}}>
+                  <button onClick={goBackToNote} className="flex items-center gap-2 text-xs font-black transition" style={{color:"#ABABAB"}}>
                     ← 返回笔记详情
                   </button>
 
@@ -3832,7 +3824,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       <span className="text-5xl font-black" style={{color:diag.deviationPct>=0?"#86efac":"#fca5a5"}}>
                         {diag.deviationPct>=0?"+":""}{diag.deviationPct}%
                       </span>
-                      <span className="text-xs mb-2" style={{color:"#555"}}>主指标偏离预期</span>
+                      <span className="text-xs mb-2" style={{color:"#ABABAB"}}>主指标偏离预期</span>
                     </div>
                     {/* Key Insight */}
                     <div className="rounded-xl p-4" style={{backgroundColor:"rgba(200,255,0,0.05)",border:`1px solid rgba(200,255,0,0.15)`}}>
@@ -3845,7 +3837,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   <div className="rounded-2xl p-5" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
                     <div className="text-xs font-black mb-4">指标对比</div>
                     <div className="grid grid-cols-4 gap-2 pb-2 mb-1" style={{borderBottom:`1px solid ${BORDER}`}}>
-                      {["指标","实际","预期","偏差"].map(h=><span key={h} className="text-[9px] font-black tracking-widest" style={{color:"#444"}}>{h}</span>)}
+                      {["指标","实际","预期","偏差"].map(h=><span key={h} className="text-[9px] font-black tracking-widest" style={{color:"#BCBCBC"}}>{h}</span>)}
                     </div>
                     {diag.metricAnalysis.map((m,i)=>(
                       <MetricRow key={i} label={m.metric} actual={m.actual} expected={m.expected} deviationPct={m.deviationPct}/>
@@ -3867,7 +3859,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     <div className="rounded-2xl p-5" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
                       <div className="flex items-center justify-between mb-4">
                         <div className="text-xs font-black">行动清单</div>
-                        <span className="text-[10px]" style={{color:"#555"}}>
+                        <span className="text-[10px]" style={{color:"#ABABAB"}}>
                           {diag.actions.filter((_,i)=>actionChecked[`${selSnap.id}-${i}`]).length}/{diag.actions.length} 已完成
                         </span>
                       </div>
@@ -3883,12 +3875,12 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   {diag.historicalReference&&(
                     <div className="rounded-2xl p-5" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
                       <div className="text-xs font-black mb-3">历史参考案例</div>
-                      <div className="rounded-xl p-4" style={{backgroundColor:"#111",border:`1px solid ${BORDER}`}}>
-                        <div className="text-[11px] mb-2" style={{color:"#888"}}>{diag.historicalReference.similarity}</div>
+                      <div className="rounded-xl p-4" style={{backgroundColor:"#FFFFFF",border:`1px solid ${BORDER}`}}>
+                        <div className="text-[11px] mb-2" style={{color:"#9B9B9B"}}>{diag.historicalReference.similarity}</div>
                         <div className="text-[11px] mb-3 font-bold text-white">结果：{diag.historicalReference.outcome}</div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px]" style={{color:"#555"}}>操作成功率</span>
-                          <div className="flex-1 h-1.5 rounded-full" style={{backgroundColor:"#2a2a2a"}}>
+                          <span className="text-[10px]" style={{color:"#ABABAB"}}>操作成功率</span>
+                          <div className="flex-1 h-1.5 rounded-full" style={{backgroundColor:"#F0EBE6"}}>
                             <div className="h-full rounded-full" style={{width:`${diag.historicalReference.successRate}%`,backgroundColor:ACCENT}}/>
                           </div>
                           <span className="text-[10px] font-black" style={{color:ACCENT}}>{diag.historicalReference.successRate}%</span>
@@ -3913,8 +3905,8 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
               <div className="space-y-5">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div className="flex items-center gap-3">
-                    <button onClick={()=>setReviewView("list")} className="text-xs font-black transition" style={{color:"#555"}}>← 返回</button>
-                    <span className="text-xs font-black" style={{color:"#333"}}>规律沉淀报告</span>
+                    <button onClick={()=>setReviewView("list")} className="text-xs font-black transition" style={{color:"#ABABAB"}}>← 返回</button>
+                    <span className="text-xs font-black" style={{color:"#CDCDCD"}}>规律沉淀报告</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {isAI?(
@@ -3928,7 +3920,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     )}
                     <button onClick={analyzePatternsAI} disabled={patternLoading||reviewNotes.length===0}
                       className="text-[10px] font-black px-3 py-1.5 rounded-lg transition disabled:opacity-40 hover:brightness-110"
-                      style={{backgroundColor:ACCENT,color:"black"}}>
+                      style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>
                       {patternLoading?"⏳ 分析中…":isAI?"🔄 重新分析":"🤖 AI 分析"}
                     </button>
                   </div>
@@ -3942,7 +3934,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                 {/* Period Summary — LIVE COMPUTED from reviewNotes */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
-                    {label:"总发布",value:livePeriodSummary.totalNotes,color:"white"},
+                    {label:"总发布",value:livePeriodSummary.totalNotes,color:"#3D3D3D"},
                     {label:"🔥 爆款",value:livePeriodSummary.hitCount,color:"#fca5a5"},
                     {label:"⭐ 优质",value:livePeriodSummary.excellentCount,color:"#93c5fd"},
                     {label:"⚠ 待优化",value:livePeriodSummary.underperfCount,color:"#fcd34d"},
@@ -3950,7 +3942,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     <div key={item.label} className="rounded-2xl p-4 text-center relative" style={{backgroundColor:CARD,border:`1px solid ${BORDER}`}}>
                       <div className="absolute top-1.5 right-2 text-[8px] font-black" style={{color:ACCENT}}>LIVE</div>
                       <div className="text-3xl font-black" style={{color:item.color}}>{item.value}</div>
-                      <div className="text-[10px] mt-1" style={{color:"#555"}}>{item.label}</div>
+                      <div className="text-[10px] mt-1" style={{color:"#ABABAB"}}>{item.label}</div>
                     </div>
                   ))}
                 </div>
@@ -3971,7 +3963,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                         return(
                           <div key={key} className="mb-3 p-3 rounded-xl" style={{backgroundColor:col.bg,border:`1px solid ${col.border}`}}>
                             <div className="text-[9px] font-black tracking-widest mb-1" style={{color:col.accent}}>{labels[key]||key}</div>
-                            <p className="text-[11px] leading-relaxed" style={{color:"#aaa"}}>{val}</p>
+                            <p className="text-[11px] leading-relaxed" style={{color:"#7A7A7A"}}>{val}</p>
                           </div>
                         );
                       })}
@@ -3986,14 +3978,14 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     {isAI&&<span className="text-[8px] font-black px-1.5 py-0.5 rounded" style={{backgroundColor:"rgba(200,255,0,0.1)",color:ACCENT}}>AI</span>}
                   </div>
                   {(report.strategies||[]).map((s,i)=>(
-                    <div key={i} className="flex gap-3 mb-3 p-3 rounded-xl" style={{backgroundColor:"#111",border:`1px solid ${BORDER}`}}>
+                    <div key={i} className="flex gap-3 mb-3 p-3 rounded-xl" style={{backgroundColor:"#FFFFFF",border:`1px solid ${BORDER}`}}>
                       <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0 mt-0.5"
                         style={{backgroundColor:i===0?ACCENT:"#2a2a2a",color:i===0?"black":"#888"}}>
                         {s.priority}
                       </div>
                       <div>
                         <div className="text-xs font-bold text-white mb-1">{s.strategy}</div>
-                        <p className="text-[11px] mb-1" style={{color:"#666"}}>{s.rationale}</p>
+                        <p className="text-[11px] mb-1" style={{color:"#9B9B9B"}}>{s.rationale}</p>
                         <p className="text-[10px] font-black" style={{color:ACCENT}}>{s.expectedImpact}</p>
                       </div>
                     </div>
@@ -4012,10 +4004,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       {title:"📈 进步中",items:report.skillEvolution?.improving||[],color:"#93c5fd",bg:"rgba(29,78,216,0.15)"},
                       {title:"⚡ 待突破",items:report.skillEvolution?.weakAreas||[],color:"#fcd34d",bg:"rgba(120,53,15,0.2)"},
                     ].map(col=>(
-                      <div key={col.title} className="rounded-xl p-4" style={{backgroundColor:col.bg,border:`1px solid rgba(255,255,255,0.05)`}}>
+                      <div key={col.title} className="rounded-xl p-4" style={{backgroundColor:col.bg,border:`1px solid rgba(0,0,0,0.03)`}}>
                         <div className="text-[10px] font-black mb-3" style={{color:col.color}}>{col.title}</div>
                         {col.items.map(item=>(
-                          <div key={item} className="text-[11px] mb-1.5 flex items-center gap-2" style={{color:"#aaa"}}>
+                          <div key={item} className="text-[11px] mb-1.5 flex items-center gap-2" style={{color:"#7A7A7A"}}>
                             <span style={{color:col.color}}>·</span>{item}
                           </div>
                         ))}
@@ -4032,20 +4024,20 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                 onClick={()=>setImgLightbox(null)}>
                 <button onClick={(e)=>{e.stopPropagation();setImgLightbox(null);}}
                   className="absolute top-4 right-4 h-10 w-10 rounded-full flex items-center justify-center text-xl font-black transition hover:brightness-110"
-                  style={{backgroundColor:"rgba(255,255,255,0.1)",color:"white"}}>✕</button>
+                  style={{backgroundColor:"rgba(0,0,0,0.06)",color:"#3D3D3D"}}>✕</button>
                 <button onClick={(e)=>{e.stopPropagation();setImgLightbox(l=>({...l,index:Math.max(0,l.index-1)}));}}
                   disabled={imgLightbox.index===0}
                   className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full flex items-center justify-center text-2xl font-black transition disabled:opacity-30 hover:brightness-110"
-                  style={{backgroundColor:"rgba(255,255,255,0.1)",color:"white"}}>‹</button>
+                  style={{backgroundColor:"rgba(0,0,0,0.06)",color:"#3D3D3D"}}>‹</button>
                 <button onClick={(e)=>{e.stopPropagation();setImgLightbox(l=>({...l,index:Math.min(l.images.length-1,l.index+1)}));}}
                   disabled={imgLightbox.index===imgLightbox.images.length-1}
                   className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full flex items-center justify-center text-2xl font-black transition disabled:opacity-30 hover:brightness-110"
-                  style={{backgroundColor:"rgba(255,255,255,0.1)",color:"white"}}>›</button>
+                  style={{backgroundColor:"rgba(0,0,0,0.06)",color:"#3D3D3D"}}>›</button>
                 <img src={imgLightbox.images[imgLightbox.index]?.dataUrl} alt=""
                   onClick={(e)=>e.stopPropagation()}
                   className="max-h-[90vh] max-w-[90vw] object-contain rounded-xl"/>
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-black"
-                  style={{backgroundColor:"rgba(255,255,255,0.1)",color:"white"}}>
+                  style={{backgroundColor:"rgba(0,0,0,0.06)",color:"#3D3D3D"}}>
                   {imgLightbox.index+1} / {imgLightbox.images.length}
                 </div>
               </div>
@@ -4054,11 +4046,11 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
             {/* ══ MODAL: SCREENSHOT UPLOAD ══ */}
             {reviewModal==="screenshot"&&(
               <div className="fixed inset-0 z-50 flex items-start justify-center p-4 overflow-y-auto" style={{backgroundColor:"rgba(0,0,0,0.85)"}}>
-                <div className="w-full max-w-lg rounded-2xl p-6 my-auto max-h-[90vh] overflow-y-auto" style={{backgroundColor:"#111",border:`1px solid ${BORDER}`}}>
+                <div className="w-full max-w-lg rounded-2xl p-6 my-auto max-h-[90vh] overflow-y-auto" style={{backgroundColor:"#FFFFFF",border:`1px solid ${BORDER}`}}>
                   <div className="flex items-center justify-between mb-5">
                     <div>
                       <div className="text-sm font-black text-white">截图录入</div>
-                      <div className="text-[10px] mt-0.5" style={{color:"#555"}}>上传小红书创作中心截图 → AI 自动识别数据</div>
+                      <div className="text-[10px] mt-0.5" style={{color:"#ABABAB"}}>上传小红书创作中心截图 → AI 自动识别数据</div>
                     </div>
                     <button onClick={()=>{setReviewModal(null);setUploadStep(0);}} className="text-[#333] hover:text-white text-lg">✕</button>
                   </div>
@@ -4079,7 +4071,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                         }}>
                         <div className="text-4xl mb-3">{imgDragOver?"📥":"📱"}</div>
                         <div className="text-sm font-black text-white mb-1">{imgDragOver?"松开开始识别":"点击或拖拽截图到这里"}</div>
-                        <div className="text-xs" style={{color:"#555"}}>支持 PNG、JPG · 调用 {aiProvider==="claude"?"Claude":aiProvider==="openai"?"GPT-4o":"Gemini"} Vision OCR</div>
+                        <div className="text-xs" style={{color:"#ABABAB"}}>支持 PNG、JPG · 调用 {aiProvider==="claude"?"Claude":aiProvider==="openai"?"GPT-4o":"Gemini"} Vision OCR</div>
                         {!activeKey&&<div className="mt-3 text-[10px] px-3 py-1.5 rounded-lg inline-block" style={{backgroundColor:"rgba(127,29,29,0.3)",color:"#fca5a5"}}>⚠ 未配置 API Key</div>}
                       </div>
                       {ocrError&&(
@@ -4087,7 +4079,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                           {ocrError}
                         </div>
                       )}
-                      <div className="text-[10px] text-center" style={{color:"#333"}}>
+                      <div className="text-[10px] text-center" style={{color:"#CDCDCD"}}>
                         💡 建议在小红书App → 创作中心 → 笔记管理 → 点击笔记数据 截图
                       </div>
                     </div>
@@ -4101,10 +4093,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       )}
                       <div className="text-3xl mb-4">🔍</div>
                       <div className="text-sm font-black text-white mb-3">AI Vision 识别中…</div>
-                      <div className="h-2 rounded-full mb-2" style={{backgroundColor:"#2a2a2a"}}>
+                      <div className="h-2 rounded-full mb-2" style={{backgroundColor:"#F0EBE6"}}>
                         <div className="h-full rounded-full transition-all duration-100" style={{width:`${uploadProgress}%`,backgroundColor:ACCENT}}/>
                       </div>
-                      <div className="text-[10px]" style={{color:"#555"}}>{aiProvider==="claude"?"Claude":aiProvider==="openai"?"GPT-4o":"Gemini"} Vision · {uploadProgress}%</div>
+                      <div className="text-[10px]" style={{color:"#ABABAB"}}>{aiProvider==="claude"?"Claude":aiProvider==="openai"?"GPT-4o":"Gemini"} Vision · {uploadProgress}%</div>
                     </div>
                   )}
 
@@ -4119,7 +4111,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       </div>
                       {/* Note selector — include ALL topics + new-note option */}
                       <div className="mb-3">
-                        <label className="text-[10px] font-black tracking-widest mb-1 block" style={{color:"#555"}}>关联到笔记</label>
+                        <label className="text-[10px] font-black tracking-widest mb-1 block" style={{color:"#ABABAB"}}>关联到笔记</label>
                         <select value={ocrNote?.id==="__NEW__"?"__NEW__":(ocrNote?.id||"")}
                           onChange={e=>{
                             const v=e.target.value;
@@ -4131,7 +4123,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                             }
                           }}
                           className="w-full rounded-lg px-3 py-2 text-sm text-white outline-none"
-                          style={{backgroundColor:"#1a1a1a",border:`1px solid ${ocrNote?"rgba(200,255,0,0.3)":"#7f1d1d"}`}}>
+                          style={{backgroundColor:"#F8F5F1",border:`1px solid ${ocrNote?"rgba(200,255,0,0.3)":"#7f1d1d"}`}}>
                           <option value="">-- 请选择笔记 --</option>
                           <option value="__NEW__">＋ 新建笔记并关联此数据</option>
                           <optgroup label="已发布">
@@ -4152,10 +4144,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                             onChange={e=>setOcrNote(n=>({...n,title:e.target.value}))}
                             placeholder="新笔记标题"
                             className="mt-2 w-full rounded-lg px-3 py-2 text-sm text-white outline-none"
-                            style={{backgroundColor:"#1a1a1a",border:"1px solid rgba(200,255,0,0.3)"}}/>
+                            style={{backgroundColor:"#F8F5F1",border:"1px solid rgba(200,255,0,0.3)"}}/>
                         )}
                       </div>
-                      <div className="text-[10px] font-black tracking-widest mb-2" style={{color:"#555"}}>识别结果（可编辑）</div>
+                      <div className="text-[10px] font-black tracking-widest mb-2" style={{color:"#ABABAB"}}>识别结果（可编辑）</div>
                       <div className="grid grid-cols-2 gap-2 mb-3">
                         {[
                           {key:"views",label:"浏览"},
@@ -4166,19 +4158,19 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                           {key:"newFollowers",label:"新增粉丝"},
                         ].map(f=>(
                           <div key={f.key}>
-                            <label className="text-[10px]" style={{color:"#555"}}>{f.label}</label>
+                            <label className="text-[10px]" style={{color:"#ABABAB"}}>{f.label}</label>
                             <input type="number" value={ocrData[f.key]}
                               onChange={e=>setOcrData(d=>({...d,[f.key]:+e.target.value||0}))}
                               className="mt-0.5 w-full rounded-lg px-3 py-2 text-sm font-black text-white outline-none"
-                              style={{backgroundColor:"#1a1a1a",border:"1px solid rgba(200,255,0,0.3)"}}/>
+                              style={{backgroundColor:"#F8F5F1",border:"1px solid rgba(200,255,0,0.3)"}}/>
                           </div>
                         ))}
                       </div>
                       <div className="mb-4">
-                        <label className="text-[10px] mb-1 block" style={{color:"#555"}}>快照类型</label>
+                        <label className="text-[10px] mb-1 block" style={{color:"#ABABAB"}}>快照类型</label>
                         <select value={ocrData.type} onChange={e=>setOcrData(d=>({...d,type:e.target.value}))}
                           className="w-full rounded-lg px-3 py-2 text-sm text-white outline-none"
-                          style={{backgroundColor:"#1a1a1a",border:"1px solid #2a2a2a"}}>
+                          style={{backgroundColor:"#F8F5F1",border:"1px solid #EDE8E3"}}>
                           <option value="1h">1h 快照</option>
                           <option value="24h">24h 快照</option>
                           <option value="72h">72h 快照</option>
@@ -4203,11 +4195,11 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
             {/* ══ MODAL: NEW NOTE ══ */}
             {reviewModal==="new-note"&&(
               <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto" style={{backgroundColor:"rgba(0,0,0,0.85)"}}>
-                <div className="w-full max-w-2xl rounded-2xl p-4 sm:p-6 my-auto max-h-[95vh] sm:max-h-[90vh] overflow-y-auto" style={{backgroundColor:"#111",border:`1px solid ${BORDER}`}}>
+                <div className="w-full max-w-2xl rounded-2xl p-4 sm:p-6 my-auto max-h-[95vh] sm:max-h-[90vh] overflow-y-auto" style={{backgroundColor:"#FFFFFF",border:`1px solid ${BORDER}`}}>
                   <div className="flex items-center justify-between mb-5">
                     <div>
                       <div className="text-sm font-black text-white">新建笔记 · 发布预测</div>
-                      <div className="text-[10px] mt-0.5" style={{color:"#555"}}>录入笔记信息 → AI 预测7天数据</div>
+                      <div className="text-[10px] mt-0.5" style={{color:"#ABABAB"}}>录入笔记信息 → AI 预测7天数据</div>
                     </div>
                     <button onClick={()=>{setReviewModal(null);setPredStep(0);setPredNote(null);}} className="text-[#333] hover:text-white text-lg">✕</button>
                   </div>
@@ -4216,7 +4208,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                   {predStep===0&&(
                     <div className="space-y-3">
                       <div>
-                        <label className="text-[10px] font-black tracking-widest block mb-1.5" style={{color:"#555"}}>标题 *</label>
+                        <label className="text-[10px] font-black tracking-widest block mb-1.5" style={{color:"#ABABAB"}}>标题 *</label>
                         <Input value={newNoteForm.title} onChange={e=>setNewNoteForm({...newNoteForm,title:e.target.value})} placeholder="输入笔记标题..."/>
                         {newNoteForm.title&&(
                           <div className="text-[10px] mt-1" style={{color:hasConflict(newNoteForm.title)?ACCENT:"#f59e0b"}}>
@@ -4226,31 +4218,31 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="text-[10px] font-black tracking-widest block mb-1.5" style={{color:"#555"}}>所属专栏</label>
+                          <label className="text-[10px] font-black tracking-widest block mb-1.5" style={{color:"#ABABAB"}}>所属专栏</label>
                           <select value={newNoteForm.pillar} onChange={e=>setNewNoteForm({...newNoteForm,pillar:e.target.value})}
                             className="w-full rounded-xl px-4 py-2.5 text-sm text-white outline-none"
-                            style={{backgroundColor:"#1a1a1a",border:"1px solid #2a2a2a"}}>
+                            style={{backgroundColor:"#F8F5F1",border:"1px solid #EDE8E3"}}>
                             {PILLARS.slice(1).map(p=><option key={p} value={p}>{p}</option>)}
                           </select>
                         </div>
                         <div>
-                          <label className="text-[10px] font-black tracking-widest block mb-1.5" style={{color:"#555"}}>类型</label>
+                          <label className="text-[10px] font-black tracking-widest block mb-1.5" style={{color:"#ABABAB"}}>类型</label>
                           <select value={newNoteForm.noteType} onChange={e=>setNewNoteForm({...newNoteForm,noteType:e.target.value})}
                             className="w-full rounded-xl px-4 py-2.5 text-sm text-white outline-none"
-                            style={{backgroundColor:"#1a1a1a",border:"1px solid #2a2a2a"}}>
+                            style={{backgroundColor:"#F8F5F1",border:"1px solid #EDE8E3"}}>
                             <option value="image">图文</option><option value="video">视频</option>
                           </select>
                         </div>
                       </div>
                       <div>
-                        <label className="text-[10px] font-black tracking-widest block mb-1.5" style={{color:"#555"}}>话题标签（逗号分隔）</label>
+                        <label className="text-[10px] font-black tracking-widest block mb-1.5" style={{color:"#ABABAB"}}>话题标签（逗号分隔）</label>
                         <Input value={newNoteForm.tags} onChange={e=>setNewNoteForm({...newNoteForm,tags:e.target.value})} placeholder="女性成长, 30岁, 人生感悟"/>
                       </div>
                       <div>
-                        <label className="text-[10px] font-black tracking-widest block mb-1.5" style={{color:"#555"}}>发布时间</label>
+                        <label className="text-[10px] font-black tracking-widest block mb-1.5" style={{color:"#ABABAB"}}>发布时间</label>
                         <input type="datetime-local" value={newNoteForm.publishTime} onChange={e=>setNewNoteForm({...newNoteForm,publishTime:e.target.value})}
                           className="w-full rounded-xl px-4 py-2.5 text-sm text-white outline-none"
-                          style={{backgroundColor:"#1a1a1a",border:"1px solid #2a2a2a"}}/>
+                          style={{backgroundColor:"#F8F5F1",border:"1px solid #EDE8E3"}}/>
                       </div>
                       <Btn accent disabled={!newNoteForm.title.trim()} onClick={generatePrediction} className="w-full mt-2">提交并生成 AI 预测 →</Btn>
                     </div>
@@ -4261,7 +4253,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                     <div className="text-center py-12">
                       <div className="text-3xl mb-4 animate-pulse">🤖</div>
                       <div className="text-sm font-black text-white mb-2">AI 正在分析你的笔记…</div>
-                      <div className="text-xs" style={{color:"#555"}}>结合账号画像 + 历史爆款数据 + 发布时段</div>
+                      <div className="text-xs" style={{color:"#ABABAB"}}>结合账号画像 + 历史爆款数据 + 发布时段</div>
                     </div>
                   )}
 
@@ -4285,9 +4277,9 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
                       </div>
                       <div className="mb-4">
                         {predNote.aiPrediction.reasons.map((r,i)=>(
-                          <div key={i} className="flex gap-2 items-start mb-2 p-2.5 rounded-lg" style={{backgroundColor:"#1a1a1a"}}>
-                            <span className="text-[9px] font-black px-1.5 py-0.5 rounded" style={{backgroundColor:"#2a2a2a",color:"#888",flexShrink:0}}>{r.type}</span>
-                            <span className="text-[11px]" style={{color:"#aaa"}}>{r.desc}</span>
+                          <div key={i} className="flex gap-2 items-start mb-2 p-2.5 rounded-lg" style={{backgroundColor:"#F8F5F1"}}>
+                            <span className="text-[9px] font-black px-1.5 py-0.5 rounded" style={{backgroundColor:"#F0EBE6",color:"#9B9B9B",flexShrink:0}}>{r.type}</span>
+                            <span className="text-[11px]" style={{color:"#7A7A7A"}}>{r.desc}</span>
                           </div>
                         ))}
                       </div>
@@ -4332,11 +4324,11 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
           style={{backgroundColor:"rgba(0,0,0,0.85)"}}
           onClick={e=>{if(e.target===e.currentTarget)setScoreDetailView(null);}}>
           <div className="w-full max-w-2xl rounded-2xl overflow-hidden my-auto"
-            style={{backgroundColor:"#111",border:`1px solid ${BORDER}`,maxHeight:"95vh"}}>
+            style={{backgroundColor:"#FFFFFF",border:`1px solid ${BORDER}`,maxHeight:"95vh"}}>
             <div className="flex items-center justify-between px-5 py-3" style={{borderBottom:`1px solid ${BORDER}`}}>
               <div className="min-w-0 flex-1">
                 <div className="text-xs font-black text-white truncate">{scoreDetailView.title}</div>
-                <div className="text-[10px] mt-0.5" style={{color:"#555"}}>
+                <div className="text-[10px] mt-0.5" style={{color:"#ABABAB"}}>
                   AI 评分明细 · 评于 {scoreDetailView.scoredAt?new Date(scoreDetailView.scoredAt).toLocaleString("zh-CN"):"未知"}
                 </div>
               </div>
@@ -4354,10 +4346,10 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
             <div className="px-5 py-3 flex gap-2" style={{borderTop:`1px solid ${BORDER}`}}>
               <button onClick={()=>setScoreDetailView(null)}
                 className="flex-1 py-2 rounded-xl text-[11px] font-black transition hover:opacity-70"
-                style={{backgroundColor:"rgba(255,255,255,0.06)",color:"#888"}}>关闭</button>
+                style={{backgroundColor:"rgba(0,0,0,0.04)",color:"#9B9B9B"}}>关闭</button>
               <button onClick={()=>{const t=scoreDetailView;setScoreDetailView(null);openEditor(t);setTimeout(()=>setEditorPanel("score"),100);}}
                 className="flex-1 py-2 rounded-xl text-[11px] font-black transition hover:brightness-110"
-                style={{backgroundColor:ACCENT,color:"black"}}>🔄 重新评分</button>
+                style={{backgroundColor:ACCENT,color:"#FFFFFF"}}>🔄 重新评分</button>
             </div>
           </div>
         </div>
@@ -4370,7 +4362,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
           style={{
             bottom:"calc(env(safe-area-inset-bottom) + 72px)",
             backgroundColor:ACCENT,
-            color:"black",
+            color:"#FFFFFF",
             boxShadow:"0 8px 24px rgba(200,255,0,0.3), 0 2px 8px rgba(0,0,0,0.4)",
           }}>
           {selected?"💾 保存到笔记":"＋ 创建新笔记"}

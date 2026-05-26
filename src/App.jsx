@@ -1766,7 +1766,8 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
   };
 
   /* ── Pattern Report: AI regenerate from live reviewNotes ── */
-  const analyzePatternsAI=async()=>{
+  const analyzePatternsAI=async(retryCount=0)=>{
+    const MAX_RETRIES=1; // total 2 attempts (initial + 1 retry)
     if(!activeKey){setPatternError("⚠ 请先在「AI对话」面板配置 API Key");return;}
     if(reviewNotes.length===0){setPatternError("⚠ 暂无已发布笔记，无法分析");return;}
     setPatternLoading(true);setPatternError("");
@@ -1849,17 +1850,21 @@ The image MUST contain the Chinese main text rendered legibly as part of the vis
       }
       showToast(`✓ 规律报告已生成 · 基于 ${reviewNotes.length} 篇`,"success");
     }catch(err){
-      // Auto-retry on rate-limit (429 / quota exceeded)
+      // Auto-retry on rate-limit (429 / quota exceeded) — max 1 retry, wait capped at 30s
       const msg=err.message||"";
       const retryMatch=msg.match(/retry in (\d+(?:\.\d+)?)s/);
       const isRateLimit=msg.includes("quota")||msg.includes("rate limit")||msg.includes("429");
-      if(isRateLimit&&retryMatch){
-        const waitSec=Math.ceil(parseFloat(retryMatch[1]))+1;
-        setPatternError(`⏳ 触发限速，${waitSec} 秒后自动重试…`);
+      if(isRateLimit&&retryMatch&&retryCount<MAX_RETRIES){
+        const waitSec=Math.min(Math.ceil(parseFloat(retryMatch[1]))+1,30);
+        setPatternError(`⏳ 触发限速（${retryCount+1}/${MAX_RETRIES+1}），${waitSec} 秒后自动重试…`);
         await new Promise(r=>setTimeout(r,waitSec*1000));
-        return analyzePatternsAI(); // retry recursively (once)
+        return analyzePatternsAI(retryCount+1);
       }
-      setPatternError(`⚠ AI 分析失败：${msg}`);
+      if(isRateLimit){
+        setPatternError(`⚠ AI 限速持续触发，请稍后手动重试（${msg.slice(0,80)}）`);
+      } else {
+        setPatternError(`⚠ AI 分析失败：${msg}`);
+      }
       showToast(`⚠ AI 分析失败：${msg.slice(0,60)}`,"error");
     }finally{setPatternLoading(false);}
   };

@@ -2103,14 +2103,55 @@ top_3_suggestions 要求：
     const key=aiProvider==="claude"?claudeKey:aiProvider==="openai"?openaiKey:geminiKey;
     if(!key){setScoreError("请先配置 API Key");setEditorPanel("score");return;}
     setScoreLoading(true);setScoreError("");setScoreResult(null);
-    // Pull cover image from selected topic (persisted) OR current coverBgUrl (session)
-    const coverImg=selected?.coverImage||coverBgUrl||"";
-    const hasCoverImg=!!coverImg;
+
+    // Collect ALL image sources for vision evaluation:
+    //   1st priority: selected.images[] (uploaded 笔记图片 — first is the actual cover)
+    //   fallback: selected.coverImage (AI-generated SVG/image) or coverBgUrl (session)
+    const uploadedImages=selected?.images||[];
+    const fallbackCover=selected?.coverImage||coverBgUrl||"";
+    // Build list: use uploaded images if any, else fall back to single cover
+    const imageSources=uploadedImages.length>0
+      ?uploadedImages.slice(0,6).map((img,i)=>({url:img.dataUrl,role:i===0?"cover":"page"}))
+      :(fallbackCover?[{url:fallbackCover,role:"cover"}]:[]);
+
+    // Helper: fetch URL → {base64, mimeType}. Handles both data URLs and remote URLs.
+    const toBase64=async(url)=>{
+      try{
+        if(url.startsWith("data:")){
+          const m=url.match(/^data:([^;]+);(?:base64,|charset=[^,]+,)(.*)$/);
+          if(!m)return null;
+          const mt=m[1];
+          const data=mt.includes("svg")?btoa(unescape(decodeURIComponent(m[2]))):m[2];
+          return{mimeType:mt,base64:data};
+        }
+        // Remote URL (Supabase Storage signed URL etc.) — fetch + convert
+        const r=await fetch(url);
+        if(!r.ok)return null;
+        const blob=await r.blob();
+        const reader=new FileReader();
+        const dataUrl=await new Promise((res,rej)=>{reader.onload=()=>res(reader.result);reader.onerror=rej;reader.readAsDataURL(blob);});
+        const m=dataUrl.match(/^data:([^;]+);base64,(.*)$/);
+        return m?{mimeType:m[1],base64:m[2]}:null;
+      }catch(e){console.warn("[xhs] toBase64 failed for",url.slice(0,80),e);return null;}
+    };
+
+    // Convert all images to base64 in parallel
+    const imageBlobs=(await Promise.all(imageSources.map(async s=>{
+      const conv=await toBase64(s.url);
+      return conv?{...conv,role:s.role}:null;
+    }))).filter(Boolean);
+
+    const hasImages=imageBlobs.length>0;
+    const imgDesc=hasImages
+      ?`📷 已附 ${imageBlobs.length} 张笔记图片：第 1 张是封面（最重要），其余是后续轮播页。请基于这些真实图片评估「封面分」5 个维度（视觉冲击/文字密度/色彩对比/主体清晰度/构图），不要只看封面文案。`
+      :`封面图：未上传笔记图片，仅基于封面文案给出估算。`;
+
     const textPrompt=`请评分：
 标题：${draft.title||"（未填写）"}
 封面文案：${draft.cover||"（未填写）"}
 正文：${draft.body||"（未填写）"}
-${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「封面分」5 个维度（视觉冲击/文字密度/色彩对比/主体清晰度/构图）。":"封面图：未上传，仅基于封面文案给出估算。"}
+
+${imgDesc}
 
 ⚠ 关于「关键词搜索量」评估（标题分①项）：
 请使用 web search 工具，搜索 "小红书 [关键词]" 看实际相关笔记数量作为热度参考：
@@ -2120,18 +2161,14 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
 - 1-10万 → 4-6分
 - < 1万 → 0-3分
 在 reason 字段标注 "（已联网核实：约 N 万笔记）"，不要再猜测月搜索量。`;
-    // Convert data URL to base64 + mime for multimodal payload
-    let base64="",mimeType="image/png";
-    if(hasCoverImg&&coverImg.startsWith("data:")){
-      const m=coverImg.match(/^data:([^;]+);(?:base64,|charset=[^,]+,)(.*)$/);
-      if(m){mimeType=m[1];base64=m[1].includes("svg")?btoa(unescape(decodeURIComponent(m[2]))):m[2];}
-    }
+
     try{
       let text="";
       if(aiProvider==="claude"){
-        const content=hasCoverImg&&base64
-          ?[{type:"image",source:{type:"base64",media_type:mimeType,data:base64}},{type:"text",text:textPrompt}]
-          :textPrompt;
+        const content=[
+          ...imageBlobs.map(img=>({type:"image",source:{type:"base64",media_type:img.mimeType,data:img.base64}})),
+          {type:"text",text:textPrompt},
+        ];
         const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":claudeKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({
           model:"claude-opus-4-5",max_tokens:3000,system:SCORING_PROMPT,
           messages:[{role:"user",content}],
@@ -2139,20 +2176,20 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
         })});
         if(!r.ok){const e=await r.json();throw new Error(e.error?.message||`HTTP ${r.status}`);}
         const d=await r.json();
-        // Claude may return multiple content blocks (tool_use + text). Concatenate text blocks.
         text=(d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
       }else if(aiProvider==="openai"){
-        const content=hasCoverImg
-          ?[{type:"image_url",image_url:{url:coverImg}},{type:"text",text:textPrompt}]
-          :textPrompt;
-        // GPT-4o doesn't have built-in web search via chat completions; fall back to estimation
+        const content=[
+          ...imageBlobs.map(img=>({type:"image_url",image_url:{url:`data:${img.mimeType};base64,${img.base64}`}})),
+          {type:"text",text:textPrompt},
+        ];
         const r=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${openaiKey}`},body:JSON.stringify({model:"gpt-4o",max_tokens:2500,messages:[{role:"system",content:SCORING_PROMPT+"\n\n注意：当前模型无法联网，请基于训练知识估算关键词热度，并在 reason 中标注「AI估算」。"},{role:"user",content}]})});
         if(!r.ok){const e=await r.json();throw new Error(e.error?.message||`HTTP ${r.status}`);}
         const d=await r.json();text=d.choices?.[0]?.message?.content||"";
       }else{
-        const parts=hasCoverImg&&base64
-          ?[{inline_data:{mime_type:mimeType,data:base64}},{text:textPrompt}]
-          :[{text:textPrompt}];
+        const parts=[
+          ...imageBlobs.map(img=>({inline_data:{mime_type:img.mimeType,data:img.base64}})),
+          {text:textPrompt},
+        ];
         const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
           system_instruction:{parts:[{text:SCORING_PROMPT}]},
           contents:[{role:"user",parts}],
@@ -2164,6 +2201,7 @@ ${hasCoverImg?"封面图：已附图，请用 Vision 实际观察图像评估「
         text=d.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("\n")||"";
         if(!text){console.warn("[xhs] Gemini scoring returned empty. Full response:",d);}
       }
+      console.log(`[xhs] AI scoring: ${imageBlobs.length} image(s) sent to ${aiProvider}`);
       const scored=parseScoreJSON(text);
       setScoreResult(scored);
       showToast(`✓ AI 评分完成：${scored.total_score}/100 ${scored.tier||""}`,"success");
